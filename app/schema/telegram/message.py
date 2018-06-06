@@ -20,7 +20,7 @@ class Message:
 class MessageSchema(Schema):
     message_id = fields.Int()
     message_from = fields.Nested(nested=UserSchema, data_key="from", attribute="message_from", required=False)
-    date = fields.DateTime()
+    date = fields.Int()
     chat = fields.Nested(ChatSchema)
     text = fields.Str(required=False)
     entities = fields.Nested(MessageEntitySchema, many=True, required=False)
@@ -62,11 +62,13 @@ class MessageSchema(Schema):
     # successful_payment
     # connected_website
 
-    @pre_load
-    def get_valid_datetime(self, data):
-        date = data['date']
-        data['date'] = datetime.fromtimestamp(date).isoformat()
-        return data
+    # @pre_load
+    # def get_valid_datetime(self, data):
+    #     date = data['date']
+    #     # TODO: remove this
+    #     import json; print('printing data from  MessageSchema\n', json.dumps(data, indent=4))
+    #     data['date'] = datetime.fromtimestamp(date).isoformat()
+    #     return data
 
     @post_load
     def get_object(self, data):

@@ -18,7 +18,7 @@ class UserSchema(Schema):
     is_bot = fields.Bool()
     first_name = fields.Str()
     last_name = fields.Str()
-    username = fields.Str()
+    username = fields.Str(required=False)
     language_code = fields.Str()
 
     @post_load
