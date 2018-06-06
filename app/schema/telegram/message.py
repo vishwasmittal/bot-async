@@ -69,5 +69,5 @@ class MessageSchema(Schema):
         return data
 
     @post_load
-    def get_message_object(self, data):
+    def get_object(self, data):
         return Message(**data)

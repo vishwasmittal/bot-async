@@ -4,7 +4,7 @@ __all__ = ['UserSchema', 'User']
 
 
 class User:
-    def __init__(self, id, is_bot, first_name, last_name, username, language_code):
+    def __init__(self, id, is_bot, first_name, last_name=None, language_code=None, username=None):
         self.id = id
         self.is_bot = is_bot
         self.first_name = first_name
@@ -22,5 +22,5 @@ class UserSchema(Schema):
     language_code = fields.Str()
 
     @post_load
-    def get_user_object(self, data):
+    def get_object(self, data):
         return User(**data)

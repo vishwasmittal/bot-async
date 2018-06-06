@@ -21,5 +21,5 @@ class MessageEntitySchema(Schema):
     user = fields.Nested(UserSchema, required=False)
 
     @post_load
-    def get_message_entity(self, data):
+    def get_object(self, data):
         return MessageEntity(**data)

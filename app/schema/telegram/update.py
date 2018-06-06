@@ -23,5 +23,5 @@ class UpdateSchema(Schema):
     # shipping
 
     @post_load
-    def get_update_object(self, data):
+    def get_object(self, data):
         return Update(**data)

@@ -12,5 +12,5 @@ class KeyboardButtonSchema(Schema):
     text = fields.Str()
 
     @post_load
-    def get_keyboard_button(self, data):
+    def get_object(self, data):
         return KeyboardButton(**data)

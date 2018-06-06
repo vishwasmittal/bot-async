@@ -13,5 +13,5 @@ class ReplyKeyboardMarkupSchema(Schema):
     keyboard = fields.Nested(KeyboardButtonSchema, many=True)
 
     @post_load
-    def get_reply_keyboard_markup(self, data):
+    def get_object(self, data):
         return ReplyKeyboardMarkup(**data)

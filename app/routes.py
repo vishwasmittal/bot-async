@@ -1,7 +1,7 @@
 # from .api import device, account, location, report, job, jobrun
 from aiohttp import web
 
-from app.telegram.api import telegram_handler
+from app.api import handler
 
 
 async def index(request):
@@ -71,7 +71,7 @@ async def index(request):
 #     _setup_report_routes(app)
 
 def _setup_jobs_routes(app):
-    app.router.add_post('/job/', telegram_handler.handler)
+    app.router.add_post('/job/', handler)
 
 
 def setup_routes(app):

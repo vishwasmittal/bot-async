@@ -1,8 +1,8 @@
 from marshmallow import Schema, fields
 
-from app.telegram.schema.types import ReplyKeyboardMarkupSchema
+from .reply_keyboard_markup import ReplyKeyboardMarkupSchema
 
-__all__ = ['SendMessageBaseSchema', 'ReplyKeyboardMarkupSchema']
+__all__ = ['SendMessageBaseSchema', 'ReplyKeyboardMessageSchema', "SendMessageSchema"]
 
 
 class SendMessageBaseSchema(Schema):
@@ -16,3 +16,6 @@ class SendMessageBaseSchema(Schema):
 
 class ReplyKeyboardMessageSchema(SendMessageBaseSchema):
     reply_markup = fields.Nested(ReplyKeyboardMarkupSchema, required=False)
+
+
+SendMessageSchema = ReplyKeyboardMessageSchema

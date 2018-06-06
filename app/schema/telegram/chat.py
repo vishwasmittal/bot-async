@@ -20,6 +20,7 @@ class ChatSchema(Schema):
     username = fields.Str(required=False)
     first_name = fields.Str(required=False)
     last_name = fields.Str(required=False)
+
     # all_members_are_administrators
     # photo
     # description
@@ -29,5 +30,5 @@ class ChatSchema(Schema):
     # can_set_sticker_set
 
     @post_load
-    def get_chat_object(self, data):
+    def get_object(self, data):
         return Chat(**data)
