@@ -1,0 +1,27 @@
+version: '3'
+services:
+  # backend:
+  #   image: python:3.6.5
+  #   # build: ./server
+  #   environment:
+  #   - DP_SERVER_HOST=0.0.0.0
+  #   - DP_SERVER_PORT=4000
+  #   - DP_MONGO_SERVER_HOST=mongo
+  #   - DP_MONGO_SERVER_PORT=27017
+  #   - DP_MONGO_SERVER_DATABASE=test_database
+  #   - GOOGLE_APPLICATION_CREDENTIALS=/permission/suryodya.json
+  #   - DP_GOOGLE_PROJECT_ID=suryodyad
+  #   - DP_GOOGLE_STORAGE_BUCKET=suryodyad.appspot.com
+  #   ports:
+  #   - "4000:4000"
+  #   # volumes:
+  #   # - /Users/vishwas/Downloads/Suryodya-924ec8a4816a.json:/permission/suryodya.json
+  #   command: bash -c "cd /code/ && pip install -r requirements.txt && python main.py"
+  #   links:
+  # #     - mongo
+  mongo:
+    image: mongo:3.6
+    ports:
+    - "27017:27017"
+    volumes:
+    - ./.dbs:/data/db
