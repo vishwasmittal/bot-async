@@ -15,9 +15,10 @@ __all__ = ['handler']
 
 async def handler(request):
     data = await request.json()
-    print('printing data from handler\n', json.dumps(data, indent=4))
+    # print('printing data from handler\n', json.dumps(data, indent=4))
     validated_data = UpdateSchema().load(data)
-    json.dump(data, open("webhook_data.json", 'w'))
+    # json.dump(data, open("webhook_data.json", 'w'))
+    print("spawning jobs")
     await spawn_job(request, send_response(validated_data))
     print("returninig 200 OK")
     return web.Response()

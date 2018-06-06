@@ -36,7 +36,7 @@ def get_response(query):
     return ResponseSchema().load(response_dict)
 
 
-def send_response(validated_update):
+async def send_response(validated_update):
     """
     < JOB >
     Send response to the user for the message in a webhook request
@@ -50,6 +50,7 @@ def send_response(validated_update):
     # use telegram methods to send the message
 
     from app.schema.query_resolver import Query
+    print(1)
     query = Query.get_query_from_update(validated_update)
 
     # get the result for this query
@@ -62,7 +63,7 @@ def send_response(validated_update):
     query.response = response
 
     # TODO: format it nicely
-    keys = [KeyboardButton(action) for action in response.actions]
+    keys = [[KeyboardButton(action) for action in response.actions]]
     reply_keyboard = ReplyKeyboardMarkup(keys)
 
     final_message = SendMessage(query.chat.id, query.text, reply_markup=reply_keyboard)
@@ -70,8 +71,8 @@ def send_response(validated_update):
     # final json message
     validated_message = SendMessageSchema().dump(final_message)
 
-    # sendMessage(validated_message)
     print("validated message")
-    print(json.dumps(validated_message))
+    r = await sendMessage(validated_message)
+    print(json.dumps(json.loads(r), indent=4))
 
 # -----------------------------------------------

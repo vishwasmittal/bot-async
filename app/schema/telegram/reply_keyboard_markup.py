@@ -10,7 +10,7 @@ class ReplyKeyboardMarkup:
 
 
 class ReplyKeyboardMarkupSchema(Schema):
-    keyboard = fields.Nested(KeyboardButtonSchema, many=True)
+    keyboard = fields.List(fields.Nested(KeyboardButtonSchema, many=True))
 
     @post_load
     def get_object(self, data):

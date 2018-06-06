@@ -8,7 +8,7 @@ __all__ = ['SendMessageBaseSchema', 'ReplyKeyboardMessageSchema',
 
 class SendMessageBase:
     def __init__(self, chat_id, text,
-                 parse_mode=None, disable_web_page_preview=None,
+                 parse_mode='Markdown', disable_web_page_preview=None,
                  disable_notification=None, reply_to_message_id=None):
         self.chat_id = chat_id
         self.text = text
