@@ -1,39 +1,9 @@
-from marshmallow import Schema, fields, post_load
-
-from app.schema.telegram import *
 import json
+
+from app.schema.query_resolver import Query
 from app.methods.telegram import sendMessage
-
-
-# --------------- models & schemas -------------
-class Response:
-    def __init__(self, text, actions=[]):
-        self.text = text
-        self.actions = actions
-
-
-class ResponseSchema(Schema):
-    text = fields.Str()
-    actions = fields.List(fields.Str)
-
-    @post_load
-    def get_object(self, data):
-        return Response(**data)
-
-
-# ------------ methods ------------------------
-
-def get_response(query):
-    response_dict = {
-        "text": query.text + " -- response",
-        "actions": [
-            "action 1",
-            "action 2",
-            "action 3"
-        ]
-    }
-
-    return ResponseSchema().load(response_dict)
+from app.schema.telegram import *
+from app.methods.response import get_response
 
 
 async def send_response(validated_update):
@@ -44,22 +14,10 @@ async def send_response(validated_update):
     :return: Nothing
     """
 
-    # extract the query from the Update object
-    # obtain result for this query object
-    # serialize this result into the send_message format
-    # use telegram methods to send the message
-
-    from app.schema.query_resolver import Query
-    print(1)
     query = Query.get_query_from_update(validated_update)
 
     # get the result for this query
     response = get_response(query)
-
-    # # TODO: remove these things
-    # query = Query('message_id', 'date', 'chat', 'message_from', 'response', text=None)
-    # response = Response('text', ['actions'])
-
     query.response = response
 
     # TODO: format it nicely
@@ -74,5 +32,3 @@ async def send_response(validated_update):
     print("validated message")
     r = await sendMessage(validated_message)
     print(json.dumps(json.loads(r), indent=4))
-
-# -----------------------------------------------
