@@ -1,3 +1,4 @@
+telegram
 aiohttp==3.0.1
 aiohttp-cors==0.7.0
 aiohttp-debugtoolbar==0.5.0

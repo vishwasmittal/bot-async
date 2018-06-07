@@ -48,8 +48,11 @@ async def send_response(validated_update):
     :return: Nothing
     """
 
+    # TODO: Remove this step from here and set it up in api
+    validated_update = UpdateSchema().load(validated_update)
+
     # get the query object from the webhook message
-    print("validated_update: \n", json.dumps(UpdateSchema().dump(validated_update), indent=4))
+    # print("validated_update: \n", json.dumps(UpdateSchema().dump(validated_update), indent=4))
     query = Query.get_query_from_update(validated_update)
 
     # get the result for this query
@@ -60,13 +63,13 @@ async def send_response(validated_update):
     reply_keyboard = get_keyboard_from_response(response)
 
     # make the final message object
-    final_message = SendMessage(query.chat.id, query.text, reply_markup=reply_keyboard)
+    final_message = SendMessage(query.chat.id, response.text, reply_markup=reply_keyboard)
 
     # final json message
     validated_message = SendMessageSchema().dump(final_message)
-    print("validated response\n", json.dumps(validated_message, indent=4))
+    # print("validated response\n", json.dumps(validated_message, indent=4))
 
     # Send the final message to the requesting user
-    print("sending response")
+    # print("sending response")
     r = await sendMessage(validated_message)
-    print(json.dumps(json.loads(r), indent=4))
+    # print(json.dumps(json.loads(r), indent=4))

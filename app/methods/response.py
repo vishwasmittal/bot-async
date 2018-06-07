@@ -24,5 +24,6 @@ def get_response(query):
             "action 10",
         ]
     }
-
-    return ResponseSchema().load(response_dict)
+    print("response_dict: ", response_dict)
+    response = ResponseSchema().load(response_dict)
+    return response

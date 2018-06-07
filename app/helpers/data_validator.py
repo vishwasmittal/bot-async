@@ -4,9 +4,7 @@ def remove_null_fields(data):
         for key in data:
             temp = remove_null_fields(data[key])
             if temp is not None:
-                print(key, temp)
                 corr_data[key] = temp
-        print("from QuerySchema.remove_null_fields\n", corr_data)
         return corr_data
     elif type(data) == list:
         corr_list = []
