@@ -14,13 +14,12 @@ class Chat:
 
 
 class ChatSchema(Schema):
-    id = fields.Int()
-    type = fields.Str()
+    id = fields.Int(required=True)
+    type = fields.Str(required=True)
     title = fields.Str(required=False)
     username = fields.Str(required=False)
     first_name = fields.Str(required=False)
     last_name = fields.Str(required=False)
-
     # all_members_are_administrators
     # photo
     # description

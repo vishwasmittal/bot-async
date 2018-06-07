@@ -19,10 +19,10 @@ class Message:
 
 class MessageSchema(Schema):
     message_id = fields.Int()
-    message_from = fields.Nested(nested=UserSchema, data_key="from", attribute="message_from", required=False)
-    date = fields.Int()
+    date = fields.Int()  # timestamp
     chat = fields.Nested(ChatSchema)
     text = fields.Str(required=False)
+    message_from = fields.Nested(nested=UserSchema, data_key="from", attribute="message_from", required=False)
     entities = fields.Nested(MessageEntitySchema, many=True, required=False)
 
     # forward_from
