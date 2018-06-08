@@ -34,7 +34,7 @@ def get_keyboard_from_response(response):
     """
 
     layout = keyboard_layout(response.actions)
-    reply_keyboard = ReplyKeyboardMarkup(layout)
+    reply_keyboard = ReplyKeyboardMarkup(layout, one_time_keyboard=False)
     return reply_keyboard
 
 

@@ -10,10 +10,10 @@ def get_response(query):
     :return: A <class 'schema.response.Response'> object
     """
     response_dict = {
-        "text": query.text + " -- response",
+        "text": query.text,  # + " -- response",
         "actions": [
-            "action 1",
-            "action 2",
+            "/start",
+            "https://google.com",
             "action 3",
             "action 4",
             "action 5",
@@ -27,3 +27,28 @@ def get_response(query):
     print("response_dict: ", response_dict)
     response = ResponseSchema().load(response_dict)
     return response
+
+
+START_KEYBOARD_ACTIONS = [
+    '/news',
+    '/trade',
+    '/unsubscribe',
+]
+
+TRADE_KEYBOARD_ACTIONS = [
+    # list of companies
+    'ADANI',
+    'Reliance',
+    'Falana',
+    'Dimka',
+    'Lorem',
+    'Ipsum',
+    'dolor',
+    'sit',
+    'amet',
+    '/abort',
+    '/unsubscribe'
+]
+
+
+
