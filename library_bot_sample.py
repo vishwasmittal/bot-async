@@ -1,53 +1,50 @@
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackQueryHandler, InlineQueryHandler
-import telegram
 import logging
-
+import telegram
 from telegram import ReplyKeyboardMarkup
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackQueryHandler, InlineQueryHandler
+
+from bot_action import Action
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
-
 TOKEN = '617361775:AAHS0S6aUQ_gLFmnfOKv72xQj5EBlhBUfos'
-#
-# updater = Updater(token=token)
-#
-# dispatcher = updater.dispatcher
-#
-# from telegram import KeyboardButton, ReplyKeyboardMarkup
-#
+
 universal_keyboard = ReplyKeyboardMarkup([
-    ["/start", "https://google.com", "action 3"],
-    ["action 4", "action 5", "action 6"],
-    ["action 7", "action 8", "action 9"],
-    ["action 10", ],
+    ["/start", "https://google.com", "/unsubscribe"],
+    ["/abort", "/blah", "action 6"],
+    # ["action 7", "action 8", "action 9"],
+    # ["action 10", ],
 ])
 
 
-# ---------- bot actions ----------
 class BotApp(object):
     def __init__(self):
         self._updater = Updater(token=TOKEN)
         self.dispatcher = self._updater.dispatcher
 
-    def on_start(self, bot, update):
-        bot.send_message(chat_id=update.message.chat_id,
-                         text="Bot at your serviced... ☜(⌒▽⌒)☞",
-                         reply_markup=universal_keyboard)
-
-    def on_unsubscribe(self, bot, update):
-        bot.send_message(chat_id=update.message.chat_id,
-                         text='You have been unsubscribed from this service. Good luck on you future endeavours. '
-                              'In case you change your mind, Feel free to /start again. ʘ‿ʘ', )
-
-    def on_abort(self, bot, update):
-        bot.send_message(chat_id=update.message.chat_id,
-                         text='Thanks for wasting my time!!! ( ಠ ʖ̯ ಠ)', )
-
-    def on_message(self, bot, update):
-        bot.send_message(chat_id=update.message.chat_id, text="You want to say something? (ง'̀-'́)ง")
-
-    def on_unknown(self, bot, update):
-        bot.send_message(chat_id=update.message.chat_id,
-                         text="Sorry, I didn't understand that command. ¯\_(ツ)_/¯")
+    # def on_start(self, bot, update):
+    #     bot.send_message(chat_id=update.message.chat_id,
+    #                      text="Bot at your serviced... ☜(⌒▽⌒)☞",
+    #                      reply_markup=universal_keyboard)
+    #
+    # def on_unsubscribe(self, bot, update):
+    #     bot.send_message(chat_id=update.message.chat_id,
+    #                      text='You have been unsubscribed from this service. Good luck on you future endeavours. '
+    #                           '\nIn case you change your mind, Feel free to /start again. ʘ‿ʘ',
+    #                      reply_markup=universal_keyboard)
+    #
+    # def on_abort(self, bot, update):
+    #     bot.send_message(chat_id=update.message.chat_id,
+    #                      text='Thanks for wasting my time!!! ( ಠ ʖ̯ ಠ)', )
+    #
+    # def on_message(self, bot, update):
+    #     bot.send_message(chat_id=update.message.chat_id, text="You want to say something? (ง'̀-'́)ง")
+    #
+    # def on_unknown(self, bot, update):
+    #     bot.send_message(chat_id=update.message.chat_id,
+    #                      text="Sorry, I didn't understand that command. ¯\_(ツ)_/¯")
+    #
+    # def none_handler(self, bot, update):
+    #     return None
 
     def start_app(self):
         print("starting app")
@@ -67,8 +64,44 @@ class BotApp(object):
         print("bot starting")
 
 
-bot = BotApp()
-bot.start_app()
+# bot_app = BotApp()
+# bot_app.start_app()
+
+if __name__ == "__main__":
+    from action_handlers import *
+
+    start = Action(trigger='start', kind='C', handler=on_start)
+    unsubscribe = Action(trigger='unsubscribe', kind='C', handler=on_unsubscribe)
+    abort = Action(trigger='abort', kind='C', handler=on_abort)
+    unknown = Action(trigger=Filters.command, kind='M', handler=on_unknown)
+    message = Action(trigger=Filters.text, kind='M', handler=on_message)
+    news = Action(trigger='news', kind='C', handler=on_news)
+    trade = Action(trigger='trade', kind='C', handler=on_trade)
+    # print (unsubscribe.next_actions)
+    start.add_actions([news, trade, unsubscribe])
+    # print("2")
+    # print(unsubscribe.next_actions)
+    news.add_actions([abort, unsubscribe])
+    trade.add_actions([abort, unsubscribe])
+
+    import json
+
+    # print (start.export_action())
+    print(json.dumps(start.export_action(), indent=4))
+    # start.export_action()
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # def onScript(self, bot, update):
 #     location_keyboard = telegram.KeyboardButton(text="send_location", request_location=True)
