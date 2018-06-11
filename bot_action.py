@@ -86,8 +86,8 @@ class Action(object):
             next_actions = [Action.import_action(action) for action in action_dict.get('next_actions', [])]
             action = Action(action_dict['trigger'],
                             action_dict.get('type') or 'M',
-                            next_actions,
                             handler=Action.get_handler(action_dict.get('handler', None)))
+            action.add_actions(next_actions)
             return action
 
     @staticmethod

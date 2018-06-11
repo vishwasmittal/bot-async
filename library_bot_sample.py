@@ -18,33 +18,47 @@ universal_keyboard = ReplyKeyboardMarkup([
 
 class BotApp(object):
     def __init__(self):
+        # self.
         self._updater = Updater(token=TOKEN)
+        # self.bot = self._updater.bot
         self.dispatcher = self._updater.dispatcher
+        setattr(self._updater.bot, 'action', None)
 
-    # def on_start(self, bot, update):
-    #     bot.send_message(chat_id=update.message.chat_id,
-    #                      text="Bot at your serviced... ☜(⌒▽⌒)☞",
-    #                      reply_markup=universal_keyboard)
-    #
-    # def on_unsubscribe(self, bot, update):
-    #     bot.send_message(chat_id=update.message.chat_id,
-    #                      text='You have been unsubscribed from this service. Good luck on you future endeavours. '
-    #                           '\nIn case you change your mind, Feel free to /start again. ʘ‿ʘ',
-    #                      reply_markup=universal_keyboard)
-    #
-    # def on_abort(self, bot, update):
-    #     bot.send_message(chat_id=update.message.chat_id,
-    #                      text='Thanks for wasting my time!!! ( ಠ ʖ̯ ಠ)', )
-    #
-    # def on_message(self, bot, update):
-    #     bot.send_message(chat_id=update.message.chat_id, text="You want to say something? (ง'̀-'́)ง")
-    #
-    # def on_unknown(self, bot, update):
-    #     bot.send_message(chat_id=update.message.chat_id,
-    #                      text="Sorry, I didn't understand that command. ¯\_(ツ)_/¯")
-    #
-    # def none_handler(self, bot, update):
-    #     return None
+    def on_start(self, bot, update):
+        bot.send_message(chat_id=update.message.chat_id,
+                         text="Bot at your serviced... ☜(⌒▽⌒)☞",
+                         reply_markup=universal_keyboard)
+
+    def on_unsubscribe(self, bot, update):
+        bot.send_message(chat_id=update.message.chat_id,
+                         text='You have been unsubscribed from this service. Good luck on you future endeavours. '
+                              '\nIn case you change your mind, Feel free to /start again. ʘ‿ʘ',
+                         reply_markup=universal_keyboard)
+
+    def on_abort(self, bot, update):
+        bot.send_message(chat_id=update.message.chat_id,
+                         text='Thanks for wasting my time!!! ( ಠ ʖ̯ ಠ)', )
+
+    def on_message(self, bot, update):
+        bot.send_message(chat_id=update.message.chat_id, text="You want to say something? (ง'̀-'́)ง")
+
+    def on_unknown(self, bot, update):
+        bot.send_message(chat_id=update.message.chat_id,
+                         text="Sorry, I didn't understand that command. ¯\_(ツ)_/¯")
+
+    def none_handler(self, bot, update):
+        return None
+
+    def load_actions(self, actions):
+        if not isinstance(actions, list):
+            actions = list(actions)
+        for action in actions:
+            # TODO: change the name from handler to callback in Action
+            trigger = action.trigger
+            callback = action.handler or self.none_handler
+            kind = action.kind
+            handler = CommandHandler if kind == 'C' else MessageHandler
+            handler(trigger, callback)
 
     def start_app(self):
         print("starting app")
@@ -63,33 +77,36 @@ class BotApp(object):
         self._updater.start_polling()
         print("bot starting")
 
+        import time
+        # print("sleeping")
+        # time.sleep(10)
+        # self.dispatcher.handlers[0] = []
+        # print(self.dispatcher.handlers)
+        # print("woke up")
 
-# bot_app = BotApp()
-# bot_app.start_app()
 
-if __name__ == "__main__":
-    from action_handlers import *
+bot_app = BotApp()
+bot_app.start_app()
 
-    start = Action(trigger='start', kind='C', handler=on_start)
-    unsubscribe = Action(trigger='unsubscribe', kind='C', handler=on_unsubscribe)
-    abort = Action(trigger='abort', kind='C', handler=on_abort)
-    unknown = Action(trigger=Filters.command, kind='M', handler=on_unknown)
-    message = Action(trigger=Filters.text, kind='M', handler=on_message)
-    news = Action(trigger='news', kind='C', handler=on_news)
-    trade = Action(trigger='trade', kind='C', handler=on_trade)
-    # print (unsubscribe.next_actions)
-    start.add_actions([news, trade, unsubscribe])
-    # print("2")
-    # print(unsubscribe.next_actions)
-    news.add_actions([abort, unsubscribe])
-    trade.add_actions([abort, unsubscribe])
-
-    import json
-
-    # print (start.export_action())
-    print(json.dumps(start.export_action(), indent=4))
-    # start.export_action()
-
+# if __name__ == "__main__":
+#     from action_handlers import *
+#
+#     start = Action(trigger='start', kind='C', handler=on_start)
+#     unsubscribe = Action(trigger='unsubscribe', kind='C', handler=on_unsubscribe)
+#     abort = Action(trigger='abort', kind='C', handler=on_abort)
+#     unknown = Action(trigger=Filters.command, kind='M', handler=on_unknown)
+#     message = Action(trigger=Filters.text, kind='M', handler=on_message)
+#     news = Action(trigger='news', kind='C', handler=on_news)
+#     trade = Action(trigger='trade', kind='C', handler=on_trade)
+#
+#     start.add_actions([news, trade, unsubscribe])
+#     news.add_actions([abort, unsubscribe])
+#     trade.add_actions([abort, unsubscribe])
+#
+#     import json
+#
+#     print(json.dumps(start.export_action(), indent=4))
+#
 
 
 
