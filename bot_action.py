@@ -21,7 +21,7 @@ class Action(object):
         self.handler = handler
 
     def __repr__(self):
-        return "Action(id={})".format(self._id)
+        return "Action(id={}, trigger={})".format(self._id, self.trigger)
 
     def get_id(self):
         return self._id
@@ -40,13 +40,13 @@ class Action(object):
 
         self.next_actions.append(action)
 
-    def add_actions(self, actions=[]):
+    def add_actions(self, actions):
         if not Action.is_next_actions_correct(actions):
             raise TypeError("actions must a list of :class: Action")
 
-        for action in actions:
-            self.next_actions.append(action)
-            # self.next_actions += actions
+        # for action in actions:
+            # self.next_actions.append(action)
+        self.next_actions += actions
 
     def export_action(self):
         # self.handler = json.dumps

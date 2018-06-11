@@ -16,98 +16,155 @@ universal_keyboard = ReplyKeyboardMarkup([
 ])
 
 
+def keyboard_layout(triggers, row_size=3):
+    """
+    Returns the layout for the keyboard
+
+    :param actions: list of actions that each key represent
+    :param row_size: no. of keys in a single row
+    Layout: list of lists specifying the position of each key (with given action) on the keyboard
+    """
+    layout = []
+    for i in range(0, len(triggers), row_size):
+        layout.append([triggers for triggers in triggers[i:i + row_size]])
+    return layout
+
+
 class BotApp(object):
-    def __init__(self):
-        # self.
+    def __init__(self, start_action=None):
         self._updater = Updater(token=TOKEN)
-        # self.bot = self._updater.bot
         self.dispatcher = self._updater.dispatcher
-        setattr(self._updater.bot, 'action', None)
+        setattr(self._updater.bot, 'actions', None)
+        self.start_action = start_action
 
-    def on_start(self, bot, update):
-        bot.send_message(chat_id=update.message.chat_id,
-                         text="Bot at your serviced... ☜(⌒▽⌒)☞",
-                         reply_markup=universal_keyboard)
+    # def on_start(self, bot, update):
+    #     bot.send_message(chat_id=update.message.chat_id,
+    #                      text="Bot at your serviced... ☜(⌒▽⌒)☞",
+    #                      reply_markup=universal_keyboard)
 
-    def on_unsubscribe(self, bot, update):
-        bot.send_message(chat_id=update.message.chat_id,
-                         text='You have been unsubscribed from this service. Good luck on you future endeavours. '
-                              '\nIn case you change your mind, Feel free to /start again. ʘ‿ʘ',
-                         reply_markup=universal_keyboard)
-
-    def on_abort(self, bot, update):
-        bot.send_message(chat_id=update.message.chat_id,
-                         text='Thanks for wasting my time!!! ( ಠ ʖ̯ ಠ)', )
-
-    def on_message(self, bot, update):
-        bot.send_message(chat_id=update.message.chat_id, text="You want to say something? (ง'̀-'́)ง")
-
-    def on_unknown(self, bot, update):
-        bot.send_message(chat_id=update.message.chat_id,
-                         text="Sorry, I didn't understand that command. ¯\_(ツ)_/¯")
+    # def on_unsubscribe(self, bot, update):
+    #     bot.send_message(chat_id=update.message.chat_id,
+    #                      text='You have been unsubscribed from this service. Good luck on you future endeavours. '
+    #                           '\nIn case you change your mind, Feel free to /start again. ʘ‿ʘ',
+    #                      reply_markup=universal_keyboard)
+    #
+    # def on_abort(self, bot, update):
+    #     bot.send_message(chat_id=update.message.chat_id,
+    #                      text='Thanks for wasting my time!!! ( ಠ ʖ̯ ಠ)', )
+    #
+    # def on_message(self, bot, update):
+    #     bot.send_message(chat_id=update.message.chat_id, text="You want to say something? (ง'̀-'́)ง")
+    #
+    # def on_unknown(self, bot, update):
+    #     bot.send_message(chat_id=update.message.chat_id,
+    #                      text="Sorry, I didn't understand that command. ¯\_(ツ)_/¯")
 
     def none_handler(self, bot, update):
         return None
 
+    def action_resolver(self, message, bot=None):
+        if not bot:
+            bot = self._updater.bot
+        # Assuming that each action is unique in the
+        # current action group which is a fair assumption
+        for action in bot.actions:
+            if action.kind == "C":
+                message = message[1:]
+            if action.trigger == message:
+                return action
+        return None
+
+    def parent_command_handler(self, bot, update):
+        curr_action = self.action_resolver(update.message.text)
+        # if not isinstance(curr_action, Action):
+        #     # TODO: make this generic and use on_unknown handler
+        #     return bot.send_message(chat_id=update.message.chat_id,
+        #                             text="Sorry, I didn't understand that command. ¯\_(ツ)_/¯",
+        #                             reply_markup=universal_keyboard)
+
+        handler = curr_action.handler or self.none_handler
+        bot_response = handler() or "Anything good"
+        new_keyboad = self.load_actions(curr_action.next_actions)
+
+        return bot.send_message(chat_id=update.message.chat_id,
+                                text=bot_response,
+                                reply_markup=new_keyboad)
+
+    def parent_msg_handler(self, bot, update):
+        pass
+
     def load_actions(self, actions):
-        if not isinstance(actions, list):
-            actions = list(actions)
-        for action in actions:
+        _actions = []
+        if not isinstance(actions, (list, tuple)):
+            _actions.append(actions)
+        else:
+            _actions = actions
+        triggers = []
+        self._updater.bot.actions = _actions
+        for action in _actions:
             # TODO: change the name from handler to callback in Action
-            trigger = action.trigger
-            callback = action.handler or self.none_handler
             kind = action.kind
-            handler = CommandHandler if kind == 'C' else MessageHandler
-            handler(trigger, callback)
+            trigger = action.trigger if kind == "M" else '/{}'.format(action.trigger)
+            # callback = action.handler or self.none_handler
+            # handler = CommandHandler if kind == 'C' else MessageHandler
+            # handler(trigger, callback)
+            triggers.append(trigger)
+        return ReplyKeyboardMarkup(keyboard_layout(triggers))
 
-    def start_app(self):
-        print("starting app")
-        start = CommandHandler('start', self.on_start)
-        unsubscribe = CommandHandler('unsubscribe', self.on_unsubscribe)
-        abort = CommandHandler('abort', self.on_abort)
-        unknown = MessageHandler(Filters.command, self.on_unknown)
-        message = MessageHandler(Filters.text, self.on_message)
+    def start_app(self, start_action=None):
+        # print("starting app")
+        #
+        # start = CommandHandler('start', self.on_start)
+        # unsubscribe = CommandHandler('unsubscribe', self.on_unsubscribe)
+        # abort = CommandHandler('abort', self.on_abort)
+        # unknown = MessageHandler(Filters.command, self.on_unknown)
+        # message = MessageHandler(Filters.text, self.on_message)
+        #
+        # self.dispatcher.add_handler(start)
+        # self.dispatcher.add_handler(unsubscribe)
+        # self.dispatcher.add_handler(abort)
+        # self.dispatcher.add_handler(unknown)
+        # self.dispatcher.add_handler(message)
+        #
+        # self._updater.start_polling()
+        # print("bot starting")
 
-        self.dispatcher.add_handler(start)
-        self.dispatcher.add_handler(unsubscribe)
-        self.dispatcher.add_handler(abort)
-        self.dispatcher.add_handler(unknown)
-        self.dispatcher.add_handler(message)
-
-        self._updater.start_polling()
-        print("bot starting")
-
-        import time
+        # import time
         # print("sleeping")
         # time.sleep(10)
         # self.dispatcher.handlers[0] = []
         # print(self.dispatcher.handlers)
         # print("woke up")
+        if start_action:
+            self.start_action = start_action
+        if self.start_action:
+            self.load_actions(self.start_action)
+
+        command_handler = MessageHandler(Filters.command, self.parent_command_handler)
+        self.dispatcher.add_handler(command_handler)
+        self._updater.start_polling()
 
 
-bot_app = BotApp()
-bot_app.start_app()
+if __name__ == "__main__":
+    from action_handlers import *
 
-# if __name__ == "__main__":
-#     from action_handlers import *
-#
-#     start = Action(trigger='start', kind='C', handler=on_start)
-#     unsubscribe = Action(trigger='unsubscribe', kind='C', handler=on_unsubscribe)
-#     abort = Action(trigger='abort', kind='C', handler=on_abort)
-#     unknown = Action(trigger=Filters.command, kind='M', handler=on_unknown)
-#     message = Action(trigger=Filters.text, kind='M', handler=on_message)
-#     news = Action(trigger='news', kind='C', handler=on_news)
-#     trade = Action(trigger='trade', kind='C', handler=on_trade)
-#
-#     start.add_actions([news, trade, unsubscribe])
-#     news.add_actions([abort, unsubscribe])
-#     trade.add_actions([abort, unsubscribe])
-#
-#     import json
-#
-#     print(json.dumps(start.export_action(), indent=4))
-#
+    start = Action(trigger='start', kind='C', handler=on_start)
+    unsubscribe = Action(trigger='unsubscribe', kind='C', handler=on_unsubscribe)
+    abort = Action(trigger='abort', kind='C', handler=on_abort)
+    unknown = Action(trigger=Filters.command, kind='M', handler=on_unknown)
+    message = Action(trigger=Filters.text, kind='M', handler=on_message)
+    news = Action(trigger='news', kind='C', handler=on_news)
+    trade = Action(trigger='trade', kind='C', handler=on_trade)
 
+    start.add_actions([news, trade, unsubscribe])
+    news.add_actions([abort, unsubscribe])
+    trade.add_actions([abort, unsubscribe])
+
+    # import json
+    # print(json.dumps(start.export_action(), indent=4))
+
+    bot_app = BotApp(start_action=start)
+    bot_app.start_app()
 
 
 
