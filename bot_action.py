@@ -1,13 +1,8 @@
-import json
-
-# from telegram.ext import Filters
-
-# from action_handlers import *
 import uuid
 
 
 class Action(object):
-    def __init__(self, trigger, kind='M', handler=None):
+    def __init__(self, trigger, kind='M', handler=None, next_actions=None, complex_trigger=False, ):
         self._id = uuid.uuid4()
 
         if kind.upper() not in ['C', 'M']:
@@ -16,15 +11,23 @@ class Action(object):
         #     raise TypeError("next_actions must a list of :class: Action")
 
         self.trigger = trigger
+        self.complex_trigger = complex_trigger
         self.kind = kind.upper()
-        self.next_actions = []
+        self.next_actions = next_actions or []
         self.handler = handler
 
     def __repr__(self):
-        return "Action(id={}, trigger={})".format(self._id, self.trigger)
+        return "Action(id={}, trigger={}, kind={})".format(self._id, self.trigger, self.kind)
 
     def get_id(self):
         return self._id
+
+    def can_be_triggered(self, trigger, kind):
+        if not self.complex_trigger:
+            return self.trigger == trigger and self.kind == kind or self.kind == 'M'
+        else:
+            # TODO: add functions and use them to trigger the actions
+            return True
 
     def get_next_actions(self):
         return self.next_actions
@@ -44,7 +47,7 @@ class Action(object):
         if not Action.is_next_actions_correct(actions):
             raise TypeError("actions must a list of :class: Action")
 
-        # for action in actions:
+            # for action in actions:
             # self.next_actions.append(action)
         self.next_actions += actions
 
