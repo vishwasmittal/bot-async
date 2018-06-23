@@ -54,7 +54,7 @@ class NewsItemSchema(Schema):
 
     @pre_dump
     def get_date_format(self, data):
-        print(data['published'])
+        # print(data['published'])
         return
 
 

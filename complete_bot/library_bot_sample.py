@@ -1,9 +1,10 @@
 import logging
+
+from .bot_action import Action
+from .database_handler import BotDBHandler
 from telegram import ReplyKeyboardMarkup
 from telegram.ext import Updater, MessageHandler, Filters
 
-from bot_action import Action
-from database_handler import store_doc
 from app.schema.telegram.message import MessageSchema
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
@@ -14,7 +15,7 @@ def keyboard_layout(triggers, row_size=3):
     """
     Returns the layout for the keyboard
 
-    :param actions: list of actions that each key represent
+    :param triggers: list of actions that each key represent
     :param row_size: no. of keys in a single row
     Layout: list of lists specifying the position of each key (with given action) on the keyboard
     """
@@ -26,11 +27,16 @@ def keyboard_layout(triggers, row_size=3):
 
 class BotApp(object):
     def __init__(self, start_action=None):
+        self.db_handler = BotDBHandler()
         self._updater = Updater(token=TOKEN)
         self.dispatcher = self._updater.dispatcher
         setattr(self._updater.bot, 'actions', None)
+        self.bot = self._updater.bot
+
         self.start_action = start_action
         self.none_action = Action("None", 'C', self.none_handler, self.start_action)
+
+        self.publishers = []
 
     def none_handler(self, bot=None, update=None):
         return None
@@ -42,12 +48,12 @@ class BotApp(object):
         # current action group which is a fair assumption
         for action in bot.actions:
             if action.can_be_triggered(message, kind):
-                # print("5, action_can_triggeted: {}".format(action))
                 return action
         return self.none_action
 
     def parent_handler(self, bot, update):
-        # print(2, "parent_handler")
+        # print(update.message.chat_id)
+        # print(type(update.message.chat_id))
         if update.message.text.startswith('/'):
             trigger = update.message.text[1:]  # commands have preceding /
             kind = 'C'
@@ -55,16 +61,14 @@ class BotApp(object):
             trigger = update.message.text
             kind = 'M'
         curr_action = self.action_resolver(message=trigger, kind=kind)
-        # print(3, curr_action)
         handler = curr_action.handler
         bot_response = handler(trigger) or "I am not going to dignify that with a response. =_="
-        # print(4, "bot_response: {}".format(bot_response))
         new_keyboard = self.load_actions(curr_action.next_actions)
         result = bot.send_message(chat_id=update.message.chat_id,
                                   text=bot_response,
                                   reply_markup=new_keyboard)
         msg_doc = [MessageSchema().dump(update.message), MessageSchema().dump(result)]
-        store_doc(msg_doc)
+        self.db_handler.save_conversation(msg_doc)
 
     def load_actions(self, actions):
         _actions = []
@@ -76,7 +80,6 @@ class BotApp(object):
         if len(_actions) == 0:
             _actions = [self.start_action]
         self._updater.bot.actions = _actions
-        # print(6, "_actions: {}".format(_actions))
         for action in _actions:
             # TODO: change the name from handler to callback in Action
             kind = action.kind
@@ -88,45 +91,62 @@ class BotApp(object):
             return keyboard
         return None
 
-    def start_app(self, start_action=None):
-        if start_action:
-            self.start_action = start_action
-        if self.start_action:
-            self.load_actions(self.start_action)
+    def send_message(self, chat_id, text, keyboard=None):
+        print("keyboard:", keyboard)
+        print('chat_id:', chat_id)
+        # import traceback
+        # traceback.print_stack()
+        print('text:', text)
+        self.bot.send_message(chat_id=chat_id, text=text, reply_markup=keyboard)
 
-        # print(1, "start_app")
+    def start_app(self):
+        self.load_actions(self.start_action)
+        # registering the handler
         command_handler = MessageHandler(Filters.all, self.parent_handler)
         # message_handler = MessageHandler(Filters.text, self.parent_msg_handler)
+
         self.dispatcher.add_handler(command_handler)
         # self.dispatcher.add_handler(message_handler)
         self._updater.start_polling()
 
+        # def register_publisher(self, name):
+        #     self.db_handler.add_publishers(name)
+        #     self.publishers.append(name)
+        #
+        # def publish(self, publisher, content):
+        #     # get the subscribers
+        #     # send them the message
+        #     # the message should contain an inline keyboard with a start/trigger button and should message indicate
+        #     # the bot start refer to these actions
+        #     pass
 
-if __name__ == "__main__":
-    from action_handlers import *
+    def add_publisher(self, publisher):
+        # add `publisher` to the list of publishers
+        # return self.send_message
+        return self.send_message
 
-    start = Action(trigger='start', kind='C', handler=on_start)
-    unsubscribe = Action(trigger='unsubscribe', kind='C', handler=on_unsubscribe)
-    abort = Action(trigger='abort', kind='C', handler=on_abort)
-    unknown = Action(trigger=Filters.command, kind='M', handler=on_unknown)
-    message = Action(trigger=Filters.text, kind='M', handler=on_message)
-    news = Action(trigger='news', kind='C', handler=on_news)
-    trade = Action(trigger='trade', kind='C', handler=on_trade)
-
-    news_source = Action(trigger="news_source", kind='M', handler=get_news)
-
-    start.add_actions([news, trade, unsubscribe, abort])
-    news.add_actions([news_source, abort, unsubscribe])
-    trade.add_actions([abort, unsubscribe])
-
-    # import json
-    # print(json.dumps(start.export_action(), indent=4))
-
-    bot_app = BotApp(start_action=start)
-    bot_app.start_app()
-
-
-
+# if __name__ == "__main__":
+#     from complete_bot.action_handlers import *
+#
+#     start = Action(trigger='start', kind='C', handler=on_start)
+#     unsubscribe = Action(trigger='unsubscribe', kind='C', handler=on_unsubscribe)
+#     abort = Action(trigger='abort', kind='C', handler=on_abort)
+#     unknown = Action(trigger=Filters.command, kind='M', handler=on_unknown)
+#     message = Action(trigger=Filters.text, kind='M', handler=on_message)
+#     news = Action(trigger='news', kind='C', handler=on_news)
+#     trade = Action(trigger='trade', kind='C', handler=on_trade)
+#
+#     news_source = Action(trigger="news_source", kind='M', handler=get_news)
+#
+#     start.add_actions([news, trade, unsubscribe, abort])
+#     news.add_actions([news_source, abort, unsubscribe])
+#     trade.add_actions([abort, unsubscribe])
+#
+#     # import json
+#     # print(json.dumps(start.export_action(), indent=4))
+#
+#     bot_app = BotApp(start_action=start)
+#     bot_app.start_app()
 
 
 # from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackQueryHandler, InlineQueryHandler
@@ -159,14 +179,16 @@ if __name__ == "__main__":
 #         self._updater = Updater(token=TOKEN)
 #
 #     def onStart(self, bot, update):
-#         bot.send_message(chat_id=update.message.chat_id, text="I'm a bot, please talk to me!", reply_markup=universal_keyboard)
+#         bot.send_message(chat_id=update.message.chat_id,
+# text="I'm a bot, please talk to me!", reply_markup=universal_keyboard)
 #
 #     def onCaps(self, bot, update, args):
 #         text_caps = ' '.join(args).upper()
 #         bot.send_message(chat_id=update.message.chat_id, text=text_caps)
 #
 #     def onEcho(self, bot, update):
-#         # bot.send_message(chat_id=update.message.chat_id, text=update.message.text, parse_mode=telegram.ParseMode.MARKDOWN)
+#         # bot.send_message(chat_id=update.message.chat_id,
+# text=update.message.text, parse_mode=telegram.ParseMode.MARKDOWN)
 #         bot.send_message(chat_id=update.message.chat_id, text=update.message.text)
 #
 #     def onScript(self, bot, update):
@@ -286,7 +308,8 @@ if __name__ == "__main__":
 # #
 # #
 # # def echo_caps(bot, update):
-# #     bot.send_message(chat_id=update.message.chat_id, text=update.message.text.upper(), reply_markup=universal_keyboard)
+# #     bot.send_message(chat_id=update.message.chat_id,
+# # text=update.message.text.upper(), reply_markup=universal_keyboard)
 # #
 # # # CommandHandler, MessageHandler, Filters
 # #
