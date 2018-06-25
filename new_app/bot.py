@@ -5,24 +5,10 @@ from telegram.ext import Updater, MessageHandler, Filters
 from bot_action import Action
 from database_handler import store_doc
 from app.schema.telegram.message import MessageSchema
-from .brain import respond
+from new_app.brain import respond
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 TOKEN = '617361775:AAHS0S6aUQ_gLFmnfOKv72xQj5EBlhBUfos'
-
-
-def keyboard_layout(triggers, row_size=3):
-    """
-    Returns the layout for the keyboard
-
-    :param actions: list of actions that each key represent
-    :param row_size: no. of keys in a single row
-    Layout: list of lists specifying the position of each key (with given action) on the keyboard
-    """
-    layout = []
-    for i in range(0, len(triggers), row_size):
-        layout.append([triggers for triggers in triggers[i:i + row_size]])
-    return layout
 
 
 class BotApp(object):
@@ -95,7 +81,10 @@ class BotApp(object):
         return self.bot.send_message(chat_id=chat_id, text=message, reply_markup=keyboard)
 
     def message_handler(self, bot, update):
-        respond(update)
+        from .publishers.news_publisher import NewsPublisher
+        NewsPublisher.subscribers.add(update.message.chat_id)
+        chat_id, message, keyboard = respond(update)
+        self.send_message(chat_id, message, keyboard)
 
     def start_app(self):
         # if start_action:
@@ -107,8 +96,10 @@ class BotApp(object):
         command_handler = MessageHandler(Filters.all, self.message_handler)
         # message_handler = MessageHandler(Filters.text, self.parent_msg_handler)
         self.dispatcher.add_handler(command_handler)
-        # self.dispatcher.add_handler(message_handler)
         self._updater.start_polling()
+
+    def stop_app(self):
+        self._updater.stop()
 
 
 BotApp = BotApp()
