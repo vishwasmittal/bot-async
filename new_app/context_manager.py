@@ -28,11 +28,14 @@ class ContextManager:
             }
         return self.context[key]
 
-
     def add_actions(self, action):
         if not isinstance(action, Action):
             raise TypeError('`action` must be an instance of class:Action')
         self.actions[action.id] = action
+
+    def add_parent_action(self, action):
+        """ Add `action` as a child of Start Action """
+        self.start_action.add_actions(action)
 
 
 ContextManager = ContextManager()  # ContextManager is a singleton

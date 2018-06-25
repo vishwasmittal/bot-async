@@ -1,5 +1,6 @@
 from .context_manager import ContextManager
-from .bot import BotApp
+from .bot import BotApp, keyboard_layout
+from telegram.replykeyboardmarkup import ReplyKeyboardMarkup
 
 
 def strip_command(command):
@@ -32,11 +33,38 @@ def get_action(context, message):
     return current_action
 
 
+def get_keyboard_for_actions(actions):
+    _actions = []
+    if not isinstance(actions, (list, tuple)):
+        _actions.append(actions)
+    else:
+        _actions = actions
+    triggers = []
+    for action in _actions:
+        # TODO: change the name from handler to callback in Action
+        kind = action.kind
+        if kind == 'C':
+            trigger = '/' + action.trigger
+            triggers.append(trigger)
+    if len(triggers) > 0:
+        keyboard = ReplyKeyboardMarkup(keyboard_layout(triggers))
+        return keyboard
+    return None
+
+
 def respond(update):
+    """
+    :param update:
+    :return: (chat_id, response_message, keyboard)
+    """
     context = ContextManager.resolve(update)
     message = update.message.text
     current_action = get_action(context, message)
     # TODO: handle the case of None instead of an Action instance
     context['last_action'] = current_action.id
+
+    chat_id = context['chat_id']
     response = current_action.callback(message)
-    return BotApp.sendMessage(context.chat_id, response)
+    next_actions = current_action.get_next_actions()
+    keyboard = get_keyboard_for_actions(next_actions)
+    return chat_id, response, keyboard

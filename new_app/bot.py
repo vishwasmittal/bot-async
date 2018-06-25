@@ -95,7 +95,7 @@ class BotApp(object):
         return self.bot.send_message(chat_id=chat_id, text=message, reply_markup=keyboard)
 
     def message_handler(self, bot, update):
-        respond(update)
+        chat_id, message, keyboard = respond(update)
 
     def start_app(self):
         # if start_action:
