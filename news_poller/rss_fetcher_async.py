@@ -1,8 +1,9 @@
 import asyncio
-from aiohttp import ClientSession
-import feedparser
 
-from news_poller.models import RSSSchema
+import feedparser
+from aiohttp import ClientSession
+
+from new_app.news_poller.models import RSSSchema
 
 list_sources = [
     'https://timesofindia.indiatimes.com/rssfeedstopstories.cms?x=1',
@@ -44,19 +45,19 @@ def print_responses(result):
     print(result)
 
 
-async def runner():
-    # while True:
+async def runner(callback):
+    while True:
         feeds = await run()
         # TODO: process the RSS objects like logging them
-        print(type(feeds[0]))
-        print("fetched new feed, feed count: {} \n\n\n".format(len(feeds)))
-        # await asyncio.sleep(10)
+        callback(feeds[0].items[0].link)
+        await asyncio.sleep(10)
 
-if __name__ == "__main__":
-    loop = asyncio.get_event_loop()
-    future = asyncio.ensure_future(runner())
-    try:
-        # loop.run_forever()
-        loop.run_until_complete(future)
-    finally:
-        loop.close()
+# if __name__ == "__main__":
+#
+#     loop = asyncio.get_event_loop()
+#     future = asyncio.ensure_future(runner())
+#     try:
+#         # loop.run_forever()
+#         loop.run_until_complete(future)
+#     finally:
+#         loop.close()
