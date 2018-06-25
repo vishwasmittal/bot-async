@@ -1,6 +1,6 @@
 import uuid
 
-from .context_manager import ContextManager
+from new_app.storage import StorageManager
 
 
 class Action(object):
@@ -17,7 +17,9 @@ class Action(object):
         self.next_actions = set()
         self.callback = callback or self.none_callback
 
-        ContextManager.add_actions(self)
+        if 'actions' not in StorageManager.store:
+            StorageManager.store['actions'] = set()
+            StorageManager.store['actions'].add(self)
 
     def __repr__(self):
         return "Action(id={}, trigger={}, kind={})".format(self.id, self.trigger, self.kind)
@@ -32,11 +34,12 @@ class Action(object):
         return self.next_actions
 
     def add_actions(self, actions):
-        _actions = []
-        if not isinstance(actions, (list, tuple)):
-            _actions.append(actions)
+        # _actions = []
+        if not isinstance(actions, (list, tuple, set)):
+            # _actions.append(actions)
+            actions = [actions]
 
-        for act in _actions:
+        for act in actions:
             self.next_actions.add(act)
             # self.next_action_ids.add(act.id)
 
@@ -44,7 +47,15 @@ class Action(object):
     def none_callback(*args, **kwargs):
         return None
 
-    # def export_action(self):
+    @staticmethod
+    def start_callback(*args, **kwargs):
+        return "Welcome to my humble home :)"
+
+    @staticmethod
+    def unknown_callback(*args, **kwargs):
+        return "Unknown action"
+
+        # def export_action(self):
         #     # self.handler = json.dumps
         #     # action_dict = dict()
         #     # # print(self.next_actions)
@@ -108,3 +119,8 @@ class Action(object):
         #         func = None
         #
         #     return func
+
+
+StartAction = Action('start', 'C', Action.start_callback)
+UnknownAction = Action('unknown', 'M', callback=Action.unknown_callback)
+UnknownAction.add_actions(StartAction)
