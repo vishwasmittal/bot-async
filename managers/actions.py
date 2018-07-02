@@ -1,8 +1,8 @@
 from managers.storage import StorageManager
 from actions_framework.actions import Action
 
-StartAction = Action('start', 'C')
-UnknownAction = Action('unknown', 'M', callback=Action.unknown_callback)
+StartAction = Action('start', 'C', Action.start_callback)
+UnknownAction = Action('unknown', 'C', callback=Action.unknown_callback)
 UnknownAction.add_actions(StartAction)
 
 
@@ -16,6 +16,7 @@ class ActionManager(StorageManager):
         """ Name of publisher, method from publisher to call whenever there is some action for it"""
         publisher_action = Action(name, 'C')
         self.publisher_callbacks[name] = callback
+        StartAction.add_actions(publisher_action)
         return publisher_action
 
     # def register_action(self, action):
@@ -26,8 +27,20 @@ class ActionManager(StorageManager):
         This session will use the context in session['action'] to get the next publisher callback. For action, if there
 
         """
+        context = session['action']['context']
+        last_action = session['action']['last_action']
+        publisher_callback = self.publisher_callbacks[context]
 
-        return publisher_callback, action
+        next_actions = last_action.get_next_actions()
+
+        for action in next_actions:
+            if action.check_trigger(message):
+                return publisher_callback, action
+
+        if StartAction.check_trigger(message):
+            return None, StartAction
+
+        return None, UnknownAction
 
 
 ActionManager = ActionManager()

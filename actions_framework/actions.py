@@ -20,9 +20,8 @@ class Action(object):
         self.next_actions = set()
         self.callback = callback or self.none_callback
 
-        # if 'actions' not in StorageManager.store:
-        #     StorageManager.store['actions'] = set()
-        #     StorageManager.store['actions'].add(self)
+        if kind == 'I':
+            self.input = None
 
     def __repr__(self):
         return "Action(id={}, trigger={}, kind={})".format(self.id, self.trigger, self.kind)
@@ -45,6 +44,30 @@ class Action(object):
         for act in actions:
             self.next_actions.add(act)
             # self.next_action_ids.add(act.id)
+
+    def add_input(self, user_input):
+        if self.kind == 'I':
+            self.input = user_input
+        raise AttributeError("Action of kind {} can't have input".format(self.kind))
+
+    def get_input(self):
+        if self.kind == 'I':
+            return self.input
+        raise AttributeError("Action of kind {} can't have input".format(self.kind))
+
+    def check_trigger(self, trigger):
+        if self.kind == 'I':
+            self.input = trigger
+            return True
+        elif self.kind == 'M' and self.trigger == trigger:
+            return True
+        elif self.kind == 'C' and self.trigger == trigger.strip().replace('/', ''):
+            return True
+
+        return False
+
+    def next_action_list(self):
+        return [action.trigger for action in self.next_actions]
 
     @staticmethod
     def none_callback(*args, **kwargs):
@@ -127,3 +150,5 @@ class Action(object):
 # StartAction = Action('start', 'C', Action.start_callback)
 # UnknownAction = Action('unknown', 'M', callback=Action.unknown_callback)
 # UnknownAction.add_actions(StartAction)
+#
+# print(UnknownAction.next_action_list())

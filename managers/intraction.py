@@ -41,6 +41,7 @@ class InteractionManager(StorageManager):
         session = self.sessions.get(session_key)
         if not session:
             session = {
+                'chat_id': session_key,
                 'security': {
                     "permission": Permissions.PERMISSION_DEFAULT,
                     "role": Roles.ROLE_DEFAULT
@@ -65,7 +66,7 @@ class InteractionManager(StorageManager):
     # def update_session_action(self, session_key, action):
     #     self.sessions[session_key]['action']['last_action'] = action
 
-    def send_message(self, to, message, reply_markup):
+    def send_message(self, to, message, next_actions):
         # sending message to user through bot will return a message instance, save this instance in the session
         pass
 
@@ -90,7 +91,9 @@ class InteractionManager(StorageManager):
 
         publisher_callback, action = ActionManager.resolve_action(session, text)
 
+        if publisher_callback is None:
+            self.send_message(to=chat_id, message=action.callback(), next_actions=action.next_action_list)
         # TODO: make it async
         # this callback will trigger the concerned publisher and provide it with the action to act on.
         # responsibility of sending the response is up to the publisher
-        publisher_callback(action)
+        publisher_callback(session, action)

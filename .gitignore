@@ -4,4 +4,5 @@
 *.pyc
 temp
 .dbs
-webhook_data.json
+temp_app
+temp_app/webhook_data.json
