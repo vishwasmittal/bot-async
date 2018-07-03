@@ -66,8 +66,12 @@ class Action(object):
 
         return False
 
+    @property
+    def qualified_name(self):
+        return '/{}'.format(self.trigger) if self.kind == 'C' else self.trigger
+
     def next_action_list(self):
-        return [action.trigger for action in self.next_actions]
+        return [action.qualified_name for action in self.next_actions]
 
     @staticmethod
     def none_callback(*args, **kwargs):

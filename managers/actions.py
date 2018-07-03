@@ -10,7 +10,10 @@ class ActionManager(StorageManager):
     def __init__(self, name='ActionManager'):
         self.actions = list()
         super().__init__(name=name)
-        self.publisher_callbacks = {}
+        self.publisher_callbacks = {
+            'unknown': None,
+            'start': None,
+        }
 
     def register_publisher(self, name, callback):
         """ Name of publisher, method from publisher to call whenever there is some action for it"""
@@ -18,9 +21,6 @@ class ActionManager(StorageManager):
         self.publisher_callbacks[name] = callback
         StartAction.add_actions(publisher_action)
         return publisher_action
-
-    # def register_action(self, action):
-    #     pass
 
     def resolve_action(self, session, message):
         """
@@ -35,12 +35,17 @@ class ActionManager(StorageManager):
 
         for action in next_actions:
             if action.check_trigger(message):
+                if context == 'start' or context == 'unknown':  # assigning the context to framework name, assuming
+                    # that the options after start represent frameworks' names
+                    session['action']['context'] = action.trigger
                 return publisher_callback, action
 
         if StartAction.check_trigger(message):
+            session['action']['context'] = 'start'
             return None, StartAction
 
-        return None, UnknownAction
+        session['action']['context'] = 'unknown'
+        return publisher_callback, UnknownAction
 
 
 ActionManager = ActionManager()

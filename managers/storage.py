@@ -38,64 +38,53 @@ class StorageManager:
         self.name = name
         self.usage_queue = list()
 
-    def store(self):
-        # TODO: store all the variables in persistence database
-        pass
-
-    def get(self, name):
-        """ Prefer the usage over `self.name` notation as the `name` might have been evicted/removed from the memory"""
-        # TODO: include the check if this attribute is in memory or not
-        return self.__dict__.get(name, None)
-
-    def upsert(self, name, value, insert=False):
-        if insert or name in self.__dict__:
-            self.__dict__[name] = value
-            return value
-        raise AttributeError("No attribute named `{}`".format(name))
-
-    def insert(self, name, value):
-        """ for defining a class variable """
-        self.upsert(name, value, True)
-
-    def update(self, name, value):
-        """ For updating a class variable.
-        This will assign the variable `name` with `value`.
-        If you are looking to new values to a list, try append function"""
-        self.upsert(name, value, False)
-
-    def append(self, name, mutable_values):
-        """ Use of appending data to mutable data structures """
-        mutable = self.__dict__.get(name, None)
-        if mutable is not None:
-            mutable += mutable_values
-        else:
-            self.__dict__[name] = mutable_values
-
-    # def add(self, key, ):
-    # TODO: divide all the operations in the categories of
-    # insert, update, upsert for normal variables, mutables and dicts
-
-    def delete(self, name):
-        """ To deallocate a class variable """
-        if name in self.__dict__:
-            value = self.__dict__[name]
-            del self.__dict__[name]
-            return value
-        return None
-
-    def evict(self):
-        # just like cache eviction
-        # release the memory for new files/data to be written in memory
-        # Define some eviction policy
-        pass
-
-# class Child(StorageManager):
-#     def __init__(self, name):
-#         self.blah = "blah"
-#         super().__init__(name)
-#
-# # test = Child("blah_Blah")
-# # # print(test.get())
-# # print(test.update('ho', "hioasoopiwefqweefqwefzzzzzzzzzzzzzzzzzzzz", True))
-# # print(test.delete('ho'))
-# # print(test.delete('ho'))
+    # def store(self):
+    #     # TODO: store all the variables in persistence database
+    #     pass
+    #
+    # def get(self, name):
+    #     """ Prefer the usage over `self.name` notation as the `name` might have been evicted/removed from the memory"""
+    #     # TODO: include the check if this attribute is in memory or not
+    #     return self.__dict__.get(name, None)
+    #
+    # def upsert(self, name, value, insert=False):
+    #     if insert or name in self.__dict__:
+    #         self.__dict__[name] = value
+    #         return value
+    #     raise AttributeError("No attribute named `{}`".format(name))
+    #
+    # def insert(self, name, value):
+    #     """ for defining a class variable """
+    #     self.upsert(name, value, True)
+    #
+    # def update(self, name, value):
+    #     """ For updating a class variable.
+    #     This will assign the variable `name` with `value`.
+    #     If you are looking to new values to a list, try append function"""
+    #     self.upsert(name, value, False)
+    #
+    # def append(self, name, mutable_values):
+    #     """ Use of appending data to mutable data structures """
+    #     mutable = self.__dict__.get(name, None)
+    #     if mutable is not None:
+    #         mutable += mutable_values
+    #     else:
+    #         self.__dict__[name] = mutable_values
+    #
+    # # def add(self, key, ):
+    # # TODO: divide all the operations in the categories of
+    # # insert, update, upsert for normal variables, mutables and dicts
+    #
+    # def delete(self, name):
+    #     """ To deallocate a class variable """
+    #     if name in self.__dict__:
+    #         value = self.__dict__[name]
+    #         del self.__dict__[name]
+    #         return value
+    #     return None
+    #
+    # def evict(self):
+    #     # just like cache eviction
+    #     # release the memory for new files/data to be written in memory
+    #     # Define some eviction policy
+    #     pass
