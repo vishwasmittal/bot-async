@@ -59,7 +59,9 @@ class InteractionManager(StorageManager):
     def get_session(self, session_key):
         """ session_key: <chat_id>"""
         session = self.sessions.get(session_key)
+        # print('session is {}'.format(session))
         if not session:
+            print("creating new session")
             session = {
                 'chat_id': session_key,
                 'security': {
@@ -75,6 +77,7 @@ class InteractionManager(StorageManager):
                 'framework_data': {},
             }
             self.sessions[session_key] = session
+        # print(self.sessions)
         return session
 
     def update_session_conversation(self, session_key, message_json):
@@ -95,29 +98,23 @@ class InteractionManager(StorageManager):
             message_json = MessageSchema().dump(result)
             self.update_session_conversation(session_key=t, message_json=message_json)
 
-    def receive_message(self, bot, update):
+    def receive_message(self, update):
         """ update: update instance from telegram.update"""
-
-        # TODO: remove this from here
-        # from telegram.update import Update
-        # update = Update()
-        # from telegram.user import User
 
         message_instance = update.message
         text = message_instance.text
-        chat_id = update.message.chat_id
-        from_user = update.message.from_user
-        session_key = '{}'.format(chat_id)
+        chat_id = message_instance.chat_id
+        from_user = message_instance.from_user
+        session_key = chat_id
         session = self.get_session(session_key)
 
-        # TODO: create MessageSchema and obtain the json for message_instance
         message_json = MessageSchema().dump(message_instance)
         self.update_session_conversation(session_key, message_json)
 
         publisher_callback, action = ActionManager.resolve_action(session, text)
 
         if publisher_callback is None:
-            self.send_message(to=chat_id, message=action.callback(), next_actions=action.next_action_list)
+            return self.send_message(to=chat_id, message=action.callback(), next_actions=action.next_action_list())
 
         # TODO: make it async
         # this callback will trigger the concerned publisher and provide it with the action to act on.

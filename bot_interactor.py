@@ -1,11 +1,11 @@
 import logging
 
-from app.schema.telegram.message import MessageSchema
-from database_handler import store_doc
-from telegram import ReplyKeyboardMarkup
+# from app.schema.telegram.message import MessageSchema
+# from database_handler import store_doc
+# from telegram import ReplyKeyboardMarkup
 from telegram.ext import Updater, MessageHandler, Filters
 
-from temp_app.bot_action import Action
+# from temp_app.bot_action import Action
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 TOKEN = '617361775:AAHS0S6aUQ_gLFmnfOKv72xQj5EBlhBUfos'
@@ -30,7 +30,7 @@ class BotApp(object):
         self._updater = Updater(token=TOKEN)
         self.dispatcher = self._updater.dispatcher
         self.bot = self._updater.bot
-        self.receiver_callback = receiver_callback
+        self.interactor_callback = receiver_callback
         # setattr(self._updater.bot, 'actions', None)
         # self.start_action = start_action
         # self.none_action = Action("None", 'C', self.none_handler, self.start_action)
@@ -105,7 +105,7 @@ class BotApp(object):
         #     self._updater.start_polling()
 
     def add_receiver_callback(self, callback):
-        self.receiver_callback = callback
+        self.interactor_callback = callback
 
     def send_message(self, chat_id, message, new_keyboard):
         result = self.bot.send_message(chat_id=chat_id,
@@ -113,6 +113,9 @@ class BotApp(object):
                                        reply_markup=new_keyboard)
         return result
         # msg_doc = [MessageSchema().dump(update.message), MessageSchema().dump(result)]
+
+    def receiver_callback(self, bot, update):
+        self.interactor_callback(update)
 
     def start_app(self):
         command_handler = MessageHandler(Filters.all, self.receiver_callback)
@@ -123,6 +126,7 @@ class BotApp(object):
 
 
 BotApp = BotApp()
+BotApp.start_app()
 # if __name__ == "__main__":
 #     from action_handlers import *
 #

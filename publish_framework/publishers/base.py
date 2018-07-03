@@ -3,7 +3,7 @@ from publish_framework.filters.base import Filter
 
 class Publisher:
     STATE_ACTIVE = 'A'
-    STATE_MUTE = 'M'
+    # STATE_MUTE = 'M'
     STATE_UNSUBSCRIBED = 'U'
 
     def __init__(self, name):
@@ -16,10 +16,10 @@ class Publisher:
             'state': self.STATE_ACTIVE
         }
 
-    def mute_sub(self, user_key):
-        self.subscribers[user_key] = {
-            'state': self.STATE_MUTE
-        }
+    # def mute_sub(self, user_key):
+    #     self.subscribers[user_key] = {
+    #         'state': self.STATE_MUTE
+    #     }
 
     def remove_sub(self, user_key):
         self.subscribers[user_key] = {
