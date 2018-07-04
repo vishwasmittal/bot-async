@@ -7,8 +7,9 @@ class Filter:
     def execute(self, content):
         return self.filter(content)
 
-    def filter(self, content):
+    async def filter(self, content):
         """
+
         Method that processes the content
         :param content:
         :return: (bool:proceed, content)

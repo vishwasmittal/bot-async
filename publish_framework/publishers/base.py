@@ -1,13 +1,16 @@
+import asyncio
 from actions_framework.actions import Action
 from publish_framework.filters.base import Filter
 from publish_framework.manager import PublisherManager
+from managers.storage import StorageManager
 
 
-class Publisher:
+class Publisher(StorageManager):
     STATE_ACTIVE = 'A'
     STATE_UNSUBSCRIBED = 'U'
 
     def __init__(self, name):
+        super().__init__(name)
         self.name = name
         self.subscribers = {}
         self.filters = list()
@@ -23,7 +26,7 @@ class Publisher:
 
         :returns: True if already subscribed or False if not subscribed or unsubscribed
         """
-        print("check_subscriber_status: ", user_key, "and self.subscribers: ", self.subscribers)
+        # print("check_subscriber_status: ", user_key, "and self.subscribers: ", self.subscribers)
         if user_key not in self.subscribers or self.subscribers[user_key]['state'] == self.STATE_UNSUBSCRIBED:
             return False
         return True
@@ -52,7 +55,7 @@ class Publisher:
         else:
             self.filters.append(content_filter)
 
-    def filter_content(self, content):
+    async def filter_content(self, content):
         """
         Returns the filtered content after calling all the filtered in the sequence they are added
         :param content: content to be filtered
@@ -63,16 +66,16 @@ class Publisher:
         proceed = True
         filtered_content = content
         for filter in self.filters:
-            proceed, filtered_content = filter(filtered_content)
+            filter_coro = asyncio.coroutine(filter)
+            proceed, filtered_content = await filter_coro(filtered_content)
             if not proceed:
                 break
 
         return proceed, filtered_content
 
-    def publish(self, content):
-        proceed, filtered_content = self.filter_content(content)
+    async def publish(self, content):
+        filter_coro = asyncio.coroutine(self.filter_content)
+        proceed, filtered_content = await filter_coro(content)
         if proceed:
             to = [key for key in self.subscribers.keys() if self.subscribers[key]['state'] == self.STATE_ACTIVE]
-            PublisherManager.send_message(to=to, message=filtered_content)
-
-            # TODO: to call a method that can publish the content
+            await PublisherManager.send_message(to=to, message=filtered_content)

@@ -14,13 +14,13 @@ class BaseServiceManager(StorageManager):
 
         self.main_action = ActionManager.register_service(self.name, self.incoming_action_callback)
 
-    def incoming_action_callback(self, session, action):
+    async def incoming_action_callback(self, session, action):
         """ What to do when an action is transferred to this manager"""
         raise NotImplementedError("incoming_action_callback() not implemented")
 
-    def send_message(self, to, message, next_actions=None):
+    async def send_message(self, to, message, next_actions=None):
         """ Send message to the user """
-        InteractionManager.send_message(to=to, message=message, next_actions=next_actions)
+        await InteractionManager.send_message(to=to, message=message, next_actions=next_actions)
 
     def register_action(self, action):
         """ Register actions for the service """

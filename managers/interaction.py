@@ -1,3 +1,4 @@
+import asyncio
 import uuid
 from telegram import ReplyKeyboardMarkup
 
@@ -57,7 +58,7 @@ class InteractionManager(StorageManager):
         self.sessions = {}
         BotApp.add_receiver_callback(self.receive_message)
 
-    def get_session(self, session_key):
+    async def get_session(self, session_key):
         """ session_key: <chat_id>"""
         session = self.sessions.get(session_key)
         # print('session is {}'.format(session))
@@ -81,13 +82,10 @@ class InteractionManager(StorageManager):
         # print(self.sessions)
         return session
 
-    def update_session_conversation(self, session_key, message_json):
+    async def update_session_conversation(self, session_key, message_json):
         self.sessions[session_key]['conversation'].append(message_json)
 
-    # def update_session_action(self, session_key, action):
-    #     self.sessions[session_key]['action']['last_action'] = action
-
-    def send_message(self, to, message, next_actions):
+    async def send_message(self, to, message, next_actions):
         if next_actions:
             keyboard = ReplyKeyboardMarkup(keyboard_layout(next_actions))
         else:
@@ -95,11 +93,12 @@ class InteractionManager(StorageManager):
         if not isinstance(to, (tuple, list)):
             to = [to]
         for t in to:
-            result = BotApp.send_message(t, message, keyboard)
+            send_message = asyncio.coroutine(BotApp.send_message)
+            result = await send_message(t, message, keyboard)
             message_json = MessageSchema().dump(result)
-            self.update_session_conversation(session_key=t, message_json=message_json)
+            await self.update_session_conversation(session_key=t, message_json=message_json)
 
-    def receive_message(self, update):
+    async def receive_message(self, update):
         """ update: update instance from telegram.update"""
 
         message_instance = update.message
@@ -107,20 +106,20 @@ class InteractionManager(StorageManager):
         chat_id = message_instance.chat_id
         from_user = message_instance.from_user
         session_key = chat_id
-        session = self.get_session(session_key)
+        session = await self.get_session(session_key)
 
         message_json = MessageSchema().dump(message_instance)
-        self.update_session_conversation(session_key, message_json)
+        await self.update_session_conversation(session_key, message_json)
 
-        publisher_callback, action = ActionManager.resolve_action(session, text)
+        action_resolver_coro = asyncio.coroutine(ActionManager.resolve_action)
+        service_callback, action = await action_resolver_coro(session, text)
 
-        if publisher_callback is None:
-            return self.send_message(to=chat_id, message=action.callback(), next_actions=action.next_action_list())
+        if service_callback is None:
+            return await self.send_message(to=chat_id, message=action.callback(),
+                                           next_actions=action.next_action_list())
 
-        # TODO: make it async
-        # this callback will trigger the concerned publisher and provide it with the action to act on.
-        # responsibility of sending the response is up to the publisher
-        publisher_callback(session, action)
+        publisher_coro = asyncio.coroutine(service_callback)
+        await publisher_coro(session, action)
 
 
 InteractionManager = InteractionManager("interaction_manager")

@@ -53,9 +53,10 @@ class PublisherManager(BaseServiceManager):
         self.action_unsubscribe.add_actions(AbortAction)
         return "Choose from the options"
 
-    def incoming_action_callback(self, session, action):
+    async def incoming_action_callback(self, session, action):
+        # TODO: call this asynchronously
         message = action.callback(session)
-        self.send_message(session.get('chat_id'), message, action.next_action_list())
+        await self.send_message(session.get('chat_id'), message, action.next_action_list())
 
     def register_publisher(self, name, subscribe_action, unsubscribe_action, status_check_callback):
         self.publishers[name] = {
@@ -63,6 +64,10 @@ class PublisherManager(BaseServiceManager):
             'unsubscribe_action': unsubscribe_action,
             'status_check_callback': status_check_callback,
         }
+
+    # def __getattribute__(self, item):
+    #     print("PublisherManager getattribute called with item: {}".format(item))
+    #     return super().__getattribute__(item)
 
 
 PublisherManager = PublisherManager('publisher')

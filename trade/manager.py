@@ -56,10 +56,10 @@ class TradeManager(BaseServiceManager):
     def call_trade_script(self, session, script_name, input, *args, **kwargs):
         return "called the script: {}\ninput: {}".format(script_name, input)
 
-    def incoming_action_callback(self, session, action):
+    async def incoming_action_callback(self, session, action):
         # message = action.callback(session=session)
         message = action.invoke_callback(session=session)
-        self.send_message(session.get('chat_id'), message, action.next_action_list())
+        await self.send_message(session.get('chat_id'), message, action.next_action_list())
 
 
 TradeManager = TradeManager(name='trade')

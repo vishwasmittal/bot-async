@@ -159,9 +159,3 @@ class Action(object):
         #         func = None
         #
         #     return func
-
-# StartAction = Action('start', 'C', Action.start_callback)
-# UnknownAction = Action('unknown', 'M', callback=Action.unknown_callback)
-# UnknownAction.add_actions(StartAction)
-#
-# print(UnknownAction.next_action_list())

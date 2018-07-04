@@ -1,9 +1,10 @@
+import asyncio
 import logging
 
 # from app.schema.telegram.message import MessageSchema
 # from database_handler import store_doc
 # from telegram import ReplyKeyboardMarkup
-from telegram.ext import Updater, MessageHandler, Filters
+from telegram.ext import Updater, MessageHandler, Filters, run_async
 
 # from temp_app.bot_action import Action
 
@@ -31,6 +32,9 @@ class BotApp(object):
         self.dispatcher = self._updater.dispatcher
         self.bot = self._updater.bot
         self.interactor_callback = receiver_callback
+
+        self.aiojobs_scheduler = None
+
         # setattr(self._updater.bot, 'actions', None)
         # self.start_action = start_action
         # self.none_action = Action("None", 'C', self.none_handler, self.start_action)
@@ -104,6 +108,9 @@ class BotApp(object):
         #     # self.dispatcher.add_handler(message_handler)
         #     self._updater.start_polling()
 
+    def add_async_execs(self, scheduler):
+        self.aiojobs_scheduler = scheduler
+
     def add_receiver_callback(self, callback):
         self.interactor_callback = callback
 
@@ -113,10 +120,10 @@ class BotApp(object):
                                        disable_web_page_preview=False,
                                        reply_markup=new_keyboard)
         return result
-        # msg_doc = [MessageSchema().dump(update.message), MessageSchema().dump(result)]
 
     def receiver_callback(self, bot, update):
-        self.interactor_callback(update)
+        # spawning the job for this requests to the bot
+        asyncio.ensure_future(self.aiojobs_scheduler.spawn(self.interactor_callback(update)))
 
     def start_app(self):
         command_handler = MessageHandler(Filters.all, self.receiver_callback)
@@ -125,28 +132,8 @@ class BotApp(object):
         # self.dispatcher.add_handler(message_handler)
         self._updater.start_polling()
 
+    def stop_app(self):
+        self._updater.stop()
+
 
 BotApp = BotApp()
-BotApp.start_app()
-# if __name__ == "__main__":
-#     from action_handlers import *
-#
-#     start = Action(trigger='start', kind='C', handler=on_start)
-#     unsubscribe = Action(trigger='unsubscribe', kind='C', handler=on_unsubscribe)
-#     abort = Action(trigger='abort', kind='C', handler=on_abort)
-#     unknown = Action(trigger=Filters.command, kind='M', handler=on_unknown)
-#     message = Action(trigger=Filters.text, kind='M', handler=on_message)
-#     news = Action(trigger='news', kind='C', handler=on_news)
-#     trade = Action(trigger='trade', kind='C', handler=on_trade)
-#
-#     news_source = Action(trigger="news_source", kind='M', handler=get_news)
-#
-#     start.add_actions([news, trade, unsubscribe, abort])
-#     news.add_actions([news_source, abort, unsubscribe])
-#     trade.add_actions([abort, unsubscribe])
-#
-#     # import json
-#     # print(json.dumps(start.export_action(), indent=4))
-#
-#     bot_app = BotApp(start_action=start)
-#     bot_app.start_app()
