@@ -1,6 +1,9 @@
+from managers.actions import StartAction
 from managers.service_manager import BaseServiceManager
 from actions_framework.actions import Action
 
+AbortAction = Action('abort', 'C', Action.abort_callback)
+AbortAction.add_actions(StartAction)
 companies = [
     {
         'name': 'Reliance',
@@ -42,7 +45,10 @@ class TradeManager(BaseServiceManager):
             company_action = Action(company['name'], 'M', self.company_callback)
             quantity_action = Action('quantity', 'I', self.call_trade_script, script_name=company['script'])
             company_action.add_actions(quantity_action)
+            quantity_action.add_actions(StartAction)
             self.main_action.add_actions(company_action)
+
+        self.main_action.add_actions(AbortAction)
 
     def company_callback(self, *args, **kargs):
         return "enter quantity"

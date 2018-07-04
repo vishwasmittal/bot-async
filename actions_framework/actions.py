@@ -7,7 +7,7 @@ import uuid
 class Action(object):
     ACTION_KINDS = ['C', 'M', 'I']
 
-    def __init__(self, trigger, kind, callback=None, id=None):
+    def __init__(self, trigger, kind, callback=None, id=None, callback_args=None, **callback_kwargs):
         self.id = id or uuid.uuid4()
 
         if kind.upper() not in self.ACTION_KINDS:
@@ -17,11 +17,11 @@ class Action(object):
         # self.complex_trigger = complex_trigger
         self.kind = kind.upper()
         # self.next_action_ids = set()
-        self.next_actions = set()
+        self.next_actions = list()
         self.callback = callback or self.none_callback
-
-        if kind == 'I':
-            self.input = None
+        self.callback_args = callback_args or ()
+        self.callback_kwargs = callback_kwargs
+        self.input = None
 
     def __repr__(self):
         return "Action(id={}, trigger={}, kind={})".format(self.id, self.trigger, self.kind)
@@ -42,7 +42,7 @@ class Action(object):
             actions = [actions]
 
         for act in actions:
-            self.next_actions.add(act)
+            self.next_actions.append(act)
             # self.next_action_ids.add(act.id)
 
     def add_input(self, user_input):
@@ -66,12 +66,18 @@ class Action(object):
 
         return False
 
+    def invoke_callback(self, *args, **kwargs):
+        return self.callback(*args, *self.callback_args, input=self.input, **kwargs, **self.callback_kwargs)
+
+    def clear_next_actions(self):
+        self.next_actions.clear()
+
     @property
     def qualified_name(self):
-        return '/{}'.format(self.trigger) if self.kind == 'C' else self.trigger
+        return '/{}'.format(self.trigger) if self.kind == 'C' else self.trigger if self.kind == 'M' else None
 
     def next_action_list(self):
-        return [action.qualified_name for action in self.next_actions]
+        return [action.qualified_name for action in self.next_actions if action.qualified_name is not None]
 
     @staticmethod
     def none_callback(*args, **kwargs):
@@ -84,6 +90,10 @@ class Action(object):
     @staticmethod
     def unknown_callback(*args, **kwargs):
         return "Unknown action"
+
+    @staticmethod
+    def abort_callback(*args, **kwargs):
+        return "Action aborted!"
 
         # def export_action(self):
         #     # self.handler = json.dumps
@@ -149,7 +159,6 @@ class Action(object):
         #         func = None
         #
         #     return func
-
 
 # StartAction = Action('start', 'C', Action.start_callback)
 # UnknownAction = Action('unknown', 'M', callback=Action.unknown_callback)

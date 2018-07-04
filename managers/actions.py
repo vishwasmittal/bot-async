@@ -15,12 +15,15 @@ class ActionManager(StorageManager):
             'start': None,
         }
 
-    def register_publisher(self, name, callback):
+    def register_service(self, name, callback):
         """ Name of publisher, method from publisher to call whenever there is some action for it"""
-        publisher_action = Action(name, 'C')
+        publisher_action = Action(name, 'C', self.service_register_message)
         self.publisher_callbacks[name] = callback
         StartAction.add_actions(publisher_action)
         return publisher_action
+
+    def service_register_message(self, *args, **kwargs):
+        return "Choose from the options"
 
     def resolve_action(self, session, message):
         """
@@ -32,19 +35,22 @@ class ActionManager(StorageManager):
         publisher_callback = self.publisher_callbacks[context]
 
         next_actions = last_action.get_next_actions()
-
+        # print(next_actions)
         for action in next_actions:
             if action.check_trigger(message):
                 if context == 'start' or context == 'unknown':  # assigning the context to framework name, assuming
                     # that the options after start represent frameworks' names
                     session['action']['context'] = action.trigger
+                session['action']['last_action'] = action
                 return publisher_callback, action
 
         if StartAction.check_trigger(message):
             session['action']['context'] = 'start'
+            session['action']['last_action'] = StartAction
             return None, StartAction
 
         session['action']['context'] = 'unknown'
+        session['action']['last_action'] = UnknownAction
         return publisher_callback, UnknownAction
 
 

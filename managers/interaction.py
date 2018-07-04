@@ -1,3 +1,4 @@
+import uuid
 from telegram import ReplyKeyboardMarkup
 
 from managers.storage import StorageManager
@@ -31,7 +32,7 @@ def keyboard_layout(triggers, row_size=3):
     """
     Returns the layout for the keyboard
 
-    :param actions: list of actions that each key represent
+    :param triggers: list of actions that each key represent
     :param row_size: no. of keys in a single row
     Layout: list of lists specifying the position of each key (with given action) on the keyboard
     """
@@ -50,9 +51,9 @@ class InteractionManager(StorageManager):
           to and pass it the message and wait for the response
     """
 
-    def __init__(self):
-        self.name = "interaction_manager"
-        super().__init__(self.name)
+    def __init__(self, name):
+        self.id = uuid.uuid4()
+        super().__init__(name)
         self.sessions = {}
         BotApp.add_receiver_callback(self.receive_message)
 
@@ -61,7 +62,7 @@ class InteractionManager(StorageManager):
         session = self.sessions.get(session_key)
         # print('session is {}'.format(session))
         if not session:
-            print("creating new session")
+            # print("creating new session")
             session = {
                 'chat_id': session_key,
                 'security': {
@@ -122,4 +123,4 @@ class InteractionManager(StorageManager):
         publisher_callback(session, action)
 
 
-InteractionManager = InteractionManager()
+InteractionManager = InteractionManager("interaction_manager")

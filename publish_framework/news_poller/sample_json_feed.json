@@ -1,0 +1,285 @@
+{
+  "feed": {
+    "language": "en-gb",
+    "links": [
+      {
+        "type": "application/rss+xml",
+        "rel": "self",
+        "href": "https://timesofindia.indiatimes.com/rssfeedstopstories.cms"
+      },
+      {
+        "rel": "alternate",
+        "type": "text/html",
+        "href": "https://timesofindia.indiatimes.com"
+      }
+    ],
+    "title": "Times of India",
+    "title_detail": {
+      "type": "text/plain",
+      "language": "en-US",
+      "base": "https://timesofindia.indiatimes.com/rssfeedstopstories.cms?x=1",
+      "value": "Times of India"
+    },
+    "link": "https://timesofindia.indiatimes.com",
+    "subtitle": "The Times of India: Breaking news, views, reviews, cricket from across India",
+    "subtitle_detail": {
+      "type": "text/html",
+      "language": "en-US",
+      "base": "https://timesofindia.indiatimes.com/rssfeedstopstories.cms?x=1",
+      "value": "The Times of India: Breaking news, views, reviews, cricket from across India"
+    },
+    "rights": "Copyright:(C) 2018 Bennett Coleman & Co. Ltd, http://info.indiatimes.com/terms/tou.html",
+    "rights_detail": {
+      "type": "text/plain",
+      "language": "en-US",
+      "base": "https://timesofindia.indiatimes.com/rssfeedstopstories.cms?x=1",
+      "value": "Copyright:(C) 2018 Bennett Coleman & Co. Ltd, http://info.indiatimes.com/terms/tou.html"
+    },
+    "docs": "http://timescontent.com/",
+    "image": {
+      "title": "Times of India",
+      "title_detail": {
+        "type": "text/plain",
+        "language": "en-US",
+        "base": "https://timesofindia.indiatimes.com/rssfeedstopstories.cms?x=1",
+        "value": "Times of India"
+      },
+      "links": [
+        {
+          "rel": "alternate",
+          "type": "text/html",
+          "href": "https://timesofindia.indiatimes.com"
+        }
+      ],
+      "link": "https://timesofindia.indiatimes.com",
+      "href": "https://timesofindia.indiatimes.com/photo.cms?msid=507610"
+    }
+  },
+  "entries": [
+    {
+      "title": "Kairana bypoll: Grand alliance wins crucial seat, sets pace for 2019",
+      "title_detail": {
+        "type": "text/plain",
+        "language": "en-US",
+        "base": "https://timesofindia.indiatimes.com/rssfeedstopstories.cms?x=1",
+        "value": "Kairana bypoll: Grand alliance wins crucial seat, sets pace for 2019"
+      },
+      "summary": "In Kairana, RLD candidate Tabassum Hasan defeated her nearest rival, BJP's Mriganka Singh by over 55,000 votes. SP candidate Naimul Hasan won in Bijnor's Noorpur by 6,211 votes defeating Avani Singh of BJP, adding to the party's humiliating defeat in bypolls barely a year from general elections.",
+      "summary_detail": {
+        "type": "text/html",
+        "language": "en-US",
+        "base": "https://timesofindia.indiatimes.com/rssfeedstopstories.cms?x=1",
+        "value": "In Kairana, RLD candidate Tabassum Hasan defeated her nearest rival, BJP's Mriganka Singh by over 55,000 votes. SP candidate Naimul Hasan won in Bijnor's Noorpur by 6,211 votes defeating Avani Singh of BJP, adding to the party's humiliating defeat in bypolls barely a year from general elections."
+      },
+      "links": [
+        {
+          "rel": "alternate",
+          "type": "text/html",
+          "href": "https://timesofindia.indiatimes.com/india/kairana-bypoll-grand-alliance-wins-crucial-seat-sets-pace-for-2019/articleshow/64399231.cms"
+        }
+      ],
+      "link": "https://timesofindia.indiatimes.com/india/kairana-bypoll-grand-alliance-wins-crucial-seat-sets-pace-for-2019/articleshow/64399231.cms",
+      "id": "https://timesofindia.indiatimes.com/india/kairana-bypoll-grand-alliance-wins-crucial-seat-sets-pace-for-2019/articleshow/64399231.cms",
+      "guidislink": false,
+      "published": "Thu, 31 May 2018 09:19:56 GMT",
+      "published_parsed": [
+        2018,
+        5,
+        31,
+        9,
+        19,
+        56,
+        3,
+        151,
+        0
+      ]
+    },
+    {
+      "title": "Live: In Maha LS bypolls, BJP wins in Palghar",
+      "title_detail": {
+        "type": "text/plain",
+        "language": "en-US",
+        "base": "https://timesofindia.indiatimes.com/rssfeedstopstories.cms?x=1",
+        "value": "Live: In Maha LS bypolls, BJP wins in Palghar"
+      },
+      "summary": "BJP's Rajendra Gavit wins Palaghar Lok Sabha bypoll by 29,572 votes, defeats Shiv Sena's Shriniwas Wanga. Stay tuned for latest developments on bypoll results for four Lok Sabha seats and 10 assembly constituencies.",
+      "summary_detail": {
+        "type": "text/html",
+        "language": "en-US",
+        "base": "https://timesofindia.indiatimes.com/rssfeedstopstories.cms?x=1",
+        "value": "BJP's Rajendra Gavit wins Palaghar Lok Sabha bypoll by 29,572 votes, defeats Shiv Sena's Shriniwas Wanga. Stay tuned for latest developments on bypoll results for four Lok Sabha seats and 10 assembly constituencies."
+      },
+      "links": [
+        {
+          "rel": "alternate",
+          "type": "text/html",
+          "href": "https://timesofindia.indiatimes.com/india/bypoll-results-live-updates-counting-of-votes-today/articleshow/64392207.cms"
+        }
+      ],
+      "link": "https://timesofindia.indiatimes.com/india/bypoll-results-live-updates-counting-of-votes-today/articleshow/64392207.cms",
+      "id": "https://timesofindia.indiatimes.com/india/bypoll-results-live-updates-counting-of-votes-today/articleshow/64392207.cms",
+      "guidislink": false,
+      "published": "Wed, 30 May 2018 23:52:45 GMT",
+      "published_parsed": [
+        2018,
+        5,
+        30,
+        23,
+        52,
+        45,
+        2,
+        150,
+        0
+      ]
+    },
+    {
+      "title": "14 byelections' results: All highlights",
+      "title_detail": {
+        "type": "text/plain",
+        "language": "en-US",
+        "base": "https://timesofindia.indiatimes.com/rssfeedstopstories.cms?x=1",
+        "value": "14 byelections' results: All highlights"
+      },
+      "summary": "",
+      "summary_detail": {
+        "type": "text/html",
+        "language": "en-US",
+        "base": "https://timesofindia.indiatimes.com/rssfeedstopstories.cms?x=1",
+        "value": ""
+      },
+      "links": [
+        {
+          "rel": "alternate",
+          "type": "text/html",
+          "href": "https://timesofindia.indiatimes.com/india/counting-underway-for-14-bypolls-all-highlights/articleshow/64395402.cms"
+        }
+      ],
+      "link": "https://timesofindia.indiatimes.com/india/counting-underway-for-14-bypolls-all-highlights/articleshow/64395402.cms",
+      "id": "https://timesofindia.indiatimes.com/india/counting-underway-for-14-bypolls-all-highlights/articleshow/64395402.cms",
+      "guidislink": false,
+      "published": "Thu, 31 May 2018 04:50:27 GMT",
+      "published_parsed": [
+        2018,
+        5,
+        31,
+        4,
+        50,
+        27,
+        3,
+        151,
+        0
+      ]
+    },
+    {
+      "title": "Trolling Aamir for his pic with daughter is wrong",
+      "title_detail": {
+        "type": "text/plain",
+        "language": "en-US",
+        "base": "https://timesofindia.indiatimes.com/rssfeedstopstories.cms?x=1",
+        "value": "Trolling Aamir for his pic with daughter is wrong"
+      },
+      "summary": "Bollywood star Aamir Khan was trolled by several individuals for posting a photograph of himself with his daughter Ira on what appears to be a playground. Ira is wearing what looks like a soccer uniform, and in the photograph she appears to have tackled her dad football style.",
+      "summary_detail": {
+        "type": "text/html",
+        "language": "en-US",
+        "base": "https://timesofindia.indiatimes.com/rssfeedstopstories.cms?x=1",
+        "value": "Bollywood star Aamir Khan was trolled by several individuals for posting a photograph of himself with his daughter Ira on what appears to be a playground. Ira is wearing what looks like a soccer uniform, and in the photograph she appears to have tackled her dad football style."
+      },
+      "links": [
+        {
+          "rel": "alternate",
+          "type": "text/html",
+          "href": "https://timesofindia.indiatimes.com/entertainment/hindi/bollywood/news/trolling-aamir-khan-for-posting-a-photograph-with-his-daughter-is-unacceptable/articleshow/64399954.cms"
+        }
+      ],
+      "link": "https://timesofindia.indiatimes.com/entertainment/hindi/bollywood/news/trolling-aamir-khan-for-posting-a-photograph-with-his-daughter-is-unacceptable/articleshow/64399954.cms",
+      "id": "https://timesofindia.indiatimes.com/entertainment/hindi/bollywood/news/trolling-aamir-khan-for-posting-a-photograph-with-his-daughter-is-unacceptable/articleshow/64399954.cms",
+      "guidislink": false,
+      "published": "Thu, 31 May 2018 10:26:17 GMT",
+      "published_parsed": [
+        2018,
+        5,
+        31,
+        10,
+        26,
+        17,
+        3,
+        151,
+        0
+      ]
+    },
+    {
+      "title": "Fuel price: Typo that could have cost Rs 18cr/day",
+      "title_detail": {
+        "type": "text/plain",
+        "language": "en-US",
+        "base": "https://timesofindia.indiatimes.com/rssfeedstopstories.cms?x=1",
+        "value": "Fuel price: Typo that could have cost Rs 18cr/day"
+      },
+      "summary": "",
+      "summary_detail": {
+        "type": "text/html",
+        "language": "en-US",
+        "base": "https://timesofindia.indiatimes.com/rssfeedstopstories.cms?x=1",
+        "value": ""
+      },
+      "links": [
+        {
+          "rel": "alternate",
+          "type": "text/html",
+          "href": "https://timesofindia.indiatimes.com/business/india-business/petrol-diesel-price-a-typo-that-could-have-cost-rs-18-crore-a-day/articleshow/64396543.cms"
+        }
+      ],
+      "link": "https://timesofindia.indiatimes.com/business/india-business/petrol-diesel-price-a-typo-that-could-have-cost-rs-18-crore-a-day/articleshow/64396543.cms",
+      "id": "https://timesofindia.indiatimes.com/business/india-business/petrol-diesel-price-a-typo-that-could-have-cost-rs-18-crore-a-day/articleshow/64396543.cms",
+      "guidislink": false,
+      "published": "Thu, 31 May 2018 07:08:48 GMT",
+      "published_parsed": [
+        2018,
+        5,
+        31,
+        7,
+        8,
+        48,
+        3,
+        151,
+        0
+      ]
+    }
+  ],
+  "bozo": 0,
+  "headers": {
+    "Server": "Apache",
+    "Last-Modified": "Thu, 31 May 2018 11:47:13 GMT",
+    "Content-Language": "en-US",
+    "Cteonnt-Length": "3791",
+    "Content-Type": "text/xml;charset=UTF-8",
+    "Content-Encoding": "gzip",
+    "Content-Length": "1404",
+    "Vary": "Accept-Encoding",
+    "Cache-Control": "private, max-age=366",
+    "Expires": "Thu, 31 May 2018 12:01:43 GMT",
+    "Date": "Thu, 31 May 2018 11:55:37 GMT",
+    "Connection": "close",
+    "Strict-Transport-Security": "max-age=86400"
+  },
+  "updated": "Thu, 31 May 2018 11:47:13 GMT",
+  "updated_parsed": [
+    2018,
+    5,
+    31,
+    11,
+    47,
+    13,
+    3,
+    151,
+    0
+  ],
+  "href": "https://timesofindia.indiatimes.com/rssfeedstopstories.cms?x=1",
+  "status": 200,
+  "encoding": "UTF-8",
+  "version": "rss20",
+  "namespaces": {
+    "": "http://www.w3.org/2005/Atom"
+  }
+}

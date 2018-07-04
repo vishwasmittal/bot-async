@@ -1,9 +1,10 @@
+from actions_framework.actions import Action
 from publish_framework.filters.base import Filter
+from publish_framework.manager import PublisherManager
 
 
 class Publisher:
     STATE_ACTIVE = 'A'
-    # STATE_MUTE = 'M'
     STATE_UNSUBSCRIBED = 'U'
 
     def __init__(self, name):
@@ -11,20 +12,33 @@ class Publisher:
         self.subscribers = {}
         self.filters = list()
 
-    def add_sub(self, user_key):
-        self.subscribers[user_key] = {
+        self.subscribe_action = Action(name, 'M', self.add_sub)
+        self.unsubscribe_action = Action(name, 'M', self.remove_sub)
+
+        PublisherManager.register_publisher(name, self.subscribe_action, self.unsubscribe_action,
+                                            self.check_subscriber_status)
+
+    def check_subscriber_status(self, user_key):
+        """ user_key = session['chat_id]
+
+        :returns: True if already subscribed or False if not subscribed or unsubscribed
+        """
+        print("check_subscriber_status: ", user_key, "and self.subscribers: ", self.subscribers)
+        if user_key not in self.subscribers or self.subscribers[user_key]['state'] == self.STATE_UNSUBSCRIBED:
+            return False
+        return True
+
+    def add_sub(self, session, *args, **kwargs):
+        self.subscribers[session['chat_id']] = {
             'state': self.STATE_ACTIVE
         }
+        return "You have been subscribed to {}".format(self.name)
 
-    # def mute_sub(self, user_key):
-    #     self.subscribers[user_key] = {
-    #         'state': self.STATE_MUTE
-    #     }
-
-    def remove_sub(self, user_key):
-        self.subscribers[user_key] = {
+    def remove_sub(self, session, *args, **kwargs):
+        self.subscribers[session['chat_id']] = {
             'state': self.STATE_UNSUBSCRIBED
         }
+        return "You have been removed from {}".format(self.name)
 
     def add_filter(self, content_filter):
         """
@@ -57,4 +71,8 @@ class Publisher:
 
     def publish(self, content):
         proceed, filtered_content = self.filter_content(content)
-        # TODO: to call a method that can publish the content
+        if proceed:
+            to = [key for key in self.subscribers.keys() if self.subscribers[key]['state'] == self.STATE_ACTIVE]
+            PublisherManager.send_message(to=to, message=filtered_content)
+
+            # TODO: to call a method that can publish the content

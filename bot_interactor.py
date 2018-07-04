@@ -110,6 +110,7 @@ class BotApp(object):
     def send_message(self, chat_id, message, new_keyboard):
         result = self.bot.send_message(chat_id=chat_id,
                                        text=message,
+                                       disable_web_page_preview=False,
                                        reply_markup=new_keyboard)
         return result
         # msg_doc = [MessageSchema().dump(update.message), MessageSchema().dump(result)]
