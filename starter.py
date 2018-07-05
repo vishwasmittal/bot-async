@@ -8,5 +8,5 @@ from trade.manager import TradeManager
 from publish_framework.manager import PublisherManager
 
 
-news_poller_future = asyncio.ensure_future(news_poller_main())
+# news_poller_future = asyncio.ensure_future(news_poller_main())
 main()

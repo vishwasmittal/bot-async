@@ -6,6 +6,8 @@ from telegram import ReplyKeyboardMarkup
 from managers.storage import StorageManager
 from managers.actions import ActionManager, UnknownAction, StartAction
 from app.schema.telegram.message import MessageSchema
+
+# TODO: remove this and plug the send_message api using some kind of callback
 from bot_interactor import BotApp
 
 
