@@ -41,22 +41,26 @@ async def run():
 
 
 async def runner(callback):
+    import time
     while True:
         feeds = await run()
         # TODO: process the RSS objects like logging them
         data = feeds[0]['entries'][1]
         message = "{} {}".format(data['summary'], data['link'])
-        print("fetched data: {}".format(message))
+        # print("fetched data: {}".format(message))
         callback_coro = asyncio.coroutine(callback)
         await callback_coro(message)
+        start = time.time()
         await asyncio.sleep(10)
+        end = time.time()
+        print("Time taken to wake up in runner(): {}".format(end - start))
 
 
 # from publish_framework.manager import PublisherManager
 from publish_framework.publishers.news_room import NewsPublisher
 
 
-def main():
+async def main():  # returns the future for news poller
     # loop = asyncio.get_event_loop()
-    asyncio.ensure_future(runner(NewsPublisher.publish))
+    await runner(NewsPublisher.publish)
     # loop.run_until_complete(future)

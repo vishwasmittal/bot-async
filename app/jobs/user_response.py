@@ -1,9 +1,8 @@
-import json
-
-from app.schema.telegram import *
-from app.schema.query_resolver import Query
 from app.methods.telegram import sendMessage
-from app.methods.response import get_response
+from app.schema.query_resolver import Query
+from app.schema.telegram import *
+
+from temp_app.app.methods.response import get_response
 
 
 def keyboard_layout(actions, row_size=3):

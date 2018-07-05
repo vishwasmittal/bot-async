@@ -4,6 +4,7 @@ import logging
 # from app.schema.telegram.message import MessageSchema
 # from database_handler import store_doc
 # from telegram import ReplyKeyboardMarkup
+import aiojobs
 from telegram.ext import Updater, MessageHandler, Filters, run_async
 
 # from temp_app.bot_action import Action
@@ -108,8 +109,8 @@ class BotApp(object):
         #     # self.dispatcher.add_handler(message_handler)
         #     self._updater.start_polling()
 
-    def add_async_execs(self, scheduler):
-        self.aiojobs_scheduler = scheduler
+    # def add_async_execs(self, scheduler):
+    #     self.aiojobs_scheduler = scheduler
 
     def add_receiver_callback(self, callback):
         self.interactor_callback = callback
@@ -123,7 +124,36 @@ class BotApp(object):
 
     def receiver_callback(self, bot, update):
         # spawning the job for this requests to the bot
-        asyncio.ensure_future(self.aiojobs_scheduler.spawn(self.interactor_callback(update)))
+        import time
+        try:
+            event_loop = asyncio.get_event_loop()
+        except:
+            # print('except called')
+            start = time.time()
+            from asyncio.events import BaseDefaultEventLoopPolicy
+            from asyncio.selector_events import BaseSelectorEventLoop
+            from asyncio.unix_events import _UnixSelectorEventLoop
+
+            base_event_loop_policy = BaseDefaultEventLoopPolicy()
+            base_event_loop_policy.set_event_loop(_UnixSelectorEventLoop())
+            asyncio.set_event_loop_policy(base_event_loop_policy)
+            event_loop = asyncio.get_event_loop()  # async event loop
+
+            end = time.time()
+            # print("Time taken in intialization and blah: {}".format(end - start))
+            future = asyncio.ensure_future(aiojobs.create_scheduler())
+            self.aiojobs_scheduler = event_loop.run_until_complete(future)  # for execution of async jobs
+        finally:
+            start = time.time()
+            future = asyncio.ensure_future(self.aiojobs_scheduler.spawn(self.interactor_callback(update)))
+            # future = asyncio.ensure_future(self.interactor_callback(update))
+            end = time.time()
+            # print("Time taken in ensuring the future: {}".format(end - start))
+
+            start = time.time()
+            event_loop.run_until_complete(future)
+            end = time.time()
+            # print("Time taken in running the loop: {}".format(end - start))
 
     def start_app(self):
         command_handler = MessageHandler(Filters.all, self.receiver_callback)

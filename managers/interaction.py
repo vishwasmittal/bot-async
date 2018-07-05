@@ -1,10 +1,11 @@
+import time
 import asyncio
 import uuid
 from telegram import ReplyKeyboardMarkup
 
 from managers.storage import StorageManager
 from managers.actions import ActionManager, UnknownAction, StartAction
-from schema.telegram.message import MessageSchema
+from app.schema.telegram.message import MessageSchema
 from bot_interactor import BotApp
 
 
@@ -114,12 +115,17 @@ class InteractionManager(StorageManager):
         action_resolver_coro = asyncio.coroutine(ActionManager.resolve_action)
         service_callback, action = await action_resolver_coro(session, text)
 
-        if service_callback is None:
-            return await self.send_message(to=chat_id, message=action.callback(),
-                                           next_actions=action.next_action_list())
+        start = time.time()
 
-        publisher_coro = asyncio.coroutine(service_callback)
-        await publisher_coro(session, action)
+        if service_callback is None:
+            await self.send_message(to=chat_id, message=action.callback(),
+                                    next_actions=action.next_action_list())
+        else:
+            publisher_coro = asyncio.coroutine(service_callback)
+            await publisher_coro(session, action)
+
+        end = time.time()
+        print("Time taken to complete job: {}".format(end - start))
 
 
 InteractionManager = InteractionManager("interaction_manager")

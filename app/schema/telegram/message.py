@@ -8,21 +8,25 @@ __all__ = ['Message', 'MessageSchema']
 
 
 class Message:
-    def __init__(self, message_id, date, chat, message_from, text=None, entities=None):
+    def __init__(self, message_id, date, chat, from_user, text=None, entities=None):
         self.message_id = message_id
         self.date = date
         self.chat = chat
-        self.message_from = message_from
+        self.from_user = from_user
         self.text = text
         self.entities = entities
+
+    @property
+    def chat_id(self):
+        return self.chat.id
 
 
 class MessageSchema(Schema):
     message_id = fields.Int()
-    date = fields.DateTime()  # timestamp
+    date = fields.Str()  # timestamp
     chat = fields.Nested(ChatSchema)
     text = fields.Str(required=False)
-    message_from = fields.Nested(nested=UserSchema, data_key="from", attribute="message_from", required=False)
+    from_user = fields.Nested(nested=UserSchema, data_key="from", attribute="from_user", required=False)
     entities = fields.Nested(MessageEntitySchema, many=True, required=False)
 
     # forward_from
@@ -62,13 +66,15 @@ class MessageSchema(Schema):
     # successful_payment
     # connected_website
 
-    # @pre_load
-    # def get_valid_datetime(self, data):
-    #     date = data['date']
-    #     # TODO: remove this
-    #     import json; print('printing data from  MessageSchema\n', json.dumps(data, indent=4))
-    #     data['date'] = datetime.fromtimestamp(date).isoformat()
-    #     return data
+    @pre_load
+    def get_valid_datetime(self, data):
+        date = data['date']
+        # TODO: remove this
+        # import json;
+        # print('printing data from  MessageSchema\n', json.dumps(data, indent=4))
+        # data['date'] = datetime.fromtimestamp(date).isoformat()
+        data['date'] = str(date)
+        return data
 
     @post_load
     def get_object(self, data):

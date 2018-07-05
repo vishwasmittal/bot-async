@@ -1,6 +1,6 @@
 from marshmallow import Schema, fields, post_load, pre_load
 
-from app.schema.telegram import Message, MessageSchema
+from app.schema.telegram.message import Message, MessageSchema
 from app.schema.response import ResponseSchema
 
 from app.helpers.data_validator import remove_null_fields
