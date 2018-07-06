@@ -1,6 +1,7 @@
 from app.methods.telegram import sendMessage
 from app.schema.query_resolver import Query
 from app.schema.telegram import *
+from app.schema.telegram.keyboard_button import KeyboardButton
 
 from temp_app.app.methods.response import get_response
 

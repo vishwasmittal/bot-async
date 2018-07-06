@@ -54,7 +54,7 @@ class TradeManager(BaseServiceManager):
         return "enter quantity"
 
     def call_trade_script(self, session, script_name, input, *args, **kwargs):
-        return "called the script: {}\ninput: {}".format(script_name, input)
+        return "called the script: {} \n input: {}".format(script_name, input)
 
     async def incoming_action_callback(self, session, action):
         # message = action.callback(session=session)

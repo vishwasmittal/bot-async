@@ -1,14 +1,17 @@
 import time
 import asyncio
 import uuid
-from telegram import ReplyKeyboardMarkup
+
+from app.schema.telegram.keyboard_button import KeyboardButton
+from app.schema.telegram.reply_keyboard_markup import ReplyKeyboardMarkup
 
 from managers.storage import StorageManager
 from managers.actions import ActionManager, UnknownAction, StartAction
 from app.schema.telegram.message import MessageSchema
 
 # TODO: remove this and plug the send_message api using some kind of callback
-from bot_interactor import BotApp
+# from bot_interactor import BotApp
+from app.methods.telegram.repliers import sendMessage, update_inline_results
 
 
 class Roles:
@@ -42,7 +45,7 @@ def keyboard_layout(triggers, row_size=3):
     """
     layout = []
     for i in range(0, len(triggers), row_size):
-        layout.append([triggers for triggers in triggers[i:i + row_size]])
+        layout.append([KeyboardButton(triggers) for triggers in triggers[i:i + row_size]])
     return layout
 
 
@@ -59,7 +62,7 @@ class InteractionManager(StorageManager):
         self.id = uuid.uuid4()
         super().__init__(name)
         self.sessions = {}
-        BotApp.add_receiver_callback(self.receive_message)
+        # BotApp.add_receiver_callback(self.receive_message)
 
     async def get_session(self, session_key):
         """ session_key: <chat_id>"""
@@ -89,15 +92,19 @@ class InteractionManager(StorageManager):
         self.sessions[session_key]['conversation'].append(message_json)
 
     async def send_message(self, to, message, next_actions):
-        if next_actions:
-            keyboard = ReplyKeyboardMarkup(keyboard_layout(next_actions))
-        else:
-            keyboard = None
+        update_inline_results(next_actions)
+        # if next_actions:
+        #     keyboard = keyboard_layout(next_actions)
+        # else:
+        #     keyboard = None
+        layout = keyboard_layout(next_actions)
+        reply_keyboard = ReplyKeyboardMarkup(layout, one_time_keyboard=False)
+        print("keyboard: {}".format(reply_keyboard))
         if not isinstance(to, (tuple, list)):
             to = [to]
         for t in to:
-            send_message = asyncio.coroutine(BotApp.send_message)
-            result = await send_message(t, message, keyboard)
+            send_message = asyncio.coroutine(sendMessage)
+            result = await send_message(t, message, reply_keyboard)
             message_json = MessageSchema().dump(result)
             await self.update_session_conversation(session_key=t, message_json=message_json)
 
@@ -123,8 +130,8 @@ class InteractionManager(StorageManager):
             await self.send_message(to=chat_id, message=action.callback(),
                                     next_actions=action.next_action_list())
         else:
-            publisher_coro = asyncio.coroutine(service_callback)
-            await publisher_coro(session, action)
+            service_coro = asyncio.coroutine(service_callback)
+            await service_coro(session, action)
 
         end = time.time()
         print("Time taken to complete job: {}".format(end - start))
