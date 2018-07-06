@@ -74,8 +74,8 @@ class Publisher(StorageManager):
         return proceed, filtered_content
 
     async def publish(self, content):
+        to = [key for key in self.subscribers.keys() if self.subscribers[key]['state'] == self.STATE_ACTIVE]
         filter_coro = asyncio.coroutine(self.filter_content)
-        proceed, filtered_content = await filter_coro(content)
+        proceed, filtered_content, to = await filter_coro(content, to)
         if proceed:
-            to = [key for key in self.subscribers.keys() if self.subscribers[key]['state'] == self.STATE_ACTIVE]
             await PublisherManager.send_message(to=to, message=filtered_content)
