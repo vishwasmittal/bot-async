@@ -7,8 +7,8 @@ AbortAction.add_actions(StartAction)
 
 
 class PublisherManager(BaseServiceManager):
-    def __init__(self, name):
-        super(PublisherManager, self).__init__(name)
+    def __init__(self, service_name):
+        super(PublisherManager, self).__init__(service_name)
         """
         self.main_action defines the parent action for this service
         self.users['subscribed'] defines users who are subscribed to this service

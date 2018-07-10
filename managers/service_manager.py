@@ -5,12 +5,11 @@ This module contains a parent class for the managers of all the frameworks that 
 from managers.storage import StorageManager
 from managers.actions import ActionManager
 from managers.interaction import InteractionManager
-from actions_framework.actions import Action
 
 
 class BaseServiceManager(StorageManager):
-    def __init__(self, name):
-        super().__init__(name)
+    def __init__(self, service_name):
+        super().__init__(service_name)
 
         self.main_action = ActionManager.register_service(self.name, self.incoming_action_callback)
 

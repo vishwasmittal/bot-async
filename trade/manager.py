@@ -29,8 +29,8 @@ companies = [
 
 
 class TradeManager(BaseServiceManager):
-    def __init__(self, name):
-        super(TradeManager, self).__init__(name)
+    def __init__(self, service_name):
+        super(TradeManager, self).__init__(service_name)
         """
         self.main_action defines the parent action for this service
         self.users['subscribed'] defines users who are subscribed to this service
@@ -62,4 +62,4 @@ class TradeManager(BaseServiceManager):
         await self.send_message(session.get('chat_id'), message, action.next_action_list())
 
 
-TradeManager = TradeManager(name='trade')
+TradeManager = TradeManager('trade')

@@ -9,7 +9,7 @@ class Action(object):
     # for slash command, simple message or input type respectively
     ACTION_KINDS = ['C', 'M', 'I']
 
-    def __init__(self, trigger, kind, callback=None, id=None, *callback_args, **callback_kwargs):
+    def __init__(self, trigger, kind, callback=None, id=None, next_actions=None, *callback_args, **callback_kwargs):
         """
         Summary line
         -----------
@@ -25,6 +25,8 @@ class Action(object):
             Callback function to be invoked when this action is taken
         id : str
             special id for the action
+        next_actions: list
+            list of next actions
         callback_args : args
             args to be passed to the callback function when invoking it
         callback_kwargs : kwargs
@@ -42,7 +44,7 @@ class Action(object):
 
         self.trigger = trigger
         self.kind = kind.upper()
-        self.next_actions = list()
+        self.next_actions = next_actions or list()
         self.callback = callback or self.none_callback
         self.callback_args = callback_args or ()
         self.callback_kwargs = callback_kwargs
@@ -66,8 +68,9 @@ class Action(object):
         if not isinstance(actions, (list, tuple, set)):
             actions = [actions]
 
-        for act in actions:
-            self.next_actions.append(act)
+        # for act in actions:
+        #     self.next_actions.append(act)
+        self.next_actions += actions
 
     def add_input(self, user_input):
         if self.kind == 'I':
@@ -100,10 +103,15 @@ class Action(object):
         Invokes the callback passes the inputs, args and kwargs along with the previously provided args and kwargs
         """
         callback_coro = asyncio.coroutine(self.callback)
-        return await callback_coro(*args, *self.callback_args, input=self.input, **kwargs, **self.callback_kwargs)
+        return await callback_coro(*args, *self.callback_args, action=self,
+                                   input=self.input, **kwargs, **self.callback_kwargs)
 
     def clear_next_actions(self):
         self.next_actions.clear()
+
+    def get_repeated_action(self):
+        return Action(self.trigger, self.kind, self.callback, None,
+                      self.next_actions, self.callback_args, self.callback_kwargs)
 
     @property
     def qualified_name(self):

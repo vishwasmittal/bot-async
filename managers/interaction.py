@@ -79,6 +79,7 @@ class InteractionManager(StorageManager):
 
         session = self.sessions.get(session_key)
         if not session:
+            # TODO: also save personal information of the user
             session = {
                 'chat_id': session_key,
                 'security': {
