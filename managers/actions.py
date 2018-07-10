@@ -27,7 +27,7 @@ class ActionManager(StorageManager):
     def service_register_message(self, *args, **kwargs):
         return "Choose from the options"
 
-    async def resolve_action(self, session, message):
+    def resolve_action(self, session, message):
         """
         This session will use the context in session['action'] to get the next publisher callback. For action, if there
         """

@@ -44,6 +44,9 @@ issue the actions will result in some output and actions following it.
 
 ![Actions flow example](images/bot_action_flow.png)
 
+made using [draw.io](draw.io)
+
+
 #### Tech Stack:
 The bot is designed to work asynchronously.
 
@@ -58,3 +61,16 @@ code using that framework only.
 The complete architecture can be represented as:
 
 ![Bot Architecture](images/bot_architecture.png)
+
+made using [draw.io](draw.io)
+
+**Storage Manager Base Class** shown in the diagram is the class that will
+manage the database interaction. It will provide methods for storing and
+retrieving data from database.
+
+
+### TODO
+
+- Add database methods for Async database interaction
+- Add Sub-modules in Interaction layer for reusing the architecture
+for multiple messenger services

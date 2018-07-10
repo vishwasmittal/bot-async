@@ -35,4 +35,5 @@ class Filter:
             :to: filtered list of recipients who can receive this content
         """
 
-        return True, content, to
+        # return True, content, to
+        raise NotImplementedError("filter() not implemented")
