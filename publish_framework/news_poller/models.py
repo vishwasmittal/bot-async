@@ -1,3 +1,9 @@
+"""
+Summary line
+-----------
+    Defines the class models and Marshmallow schemas for RSS news articles
+"""
+
 import datetime
 from pprint import pprint
 from marshmallow import Schema, fields, pre_load, post_load, pre_dump

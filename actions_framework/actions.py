@@ -1,3 +1,4 @@
+import asyncio
 import uuid
 
 
@@ -5,45 +6,68 @@ import uuid
 
 
 class Action(object):
+    # for slash command, simple message or input type respectively
     ACTION_KINDS = ['C', 'M', 'I']
 
-    def __init__(self, trigger, kind, callback=None, id=None, callback_args=None, **callback_kwargs):
-        self.id = id or uuid.uuid4()
+    def __init__(self, trigger, kind, callback=None, id=None, *callback_args, **callback_kwargs):
+        """
+        Summary line
+        -----------
+        Extended description of function.
+
+        Parameters
+        ----------
+        trigger : str
+            Text that represent this action
+        kind : str
+            C: slash command, M: simple message or I: custom input from user
+        callback : function
+            Callback function to be invoked when this action is taken
+        id : str
+            special id for the action
+        callback_args : args
+            args to be passed to the callback function when invoking it
+        callback_kwargs : kwargs
+            kwargs to be passed to the callback function when invoking it
+
+        Returns
+        -------
+
+        """
+
+        self.id = id or str(uuid.uuid4())
 
         if kind.upper() not in self.ACTION_KINDS:
             raise TypeError("'type' should be one of {}".format(self.ACTION_KINDS))
 
         self.trigger = trigger
-        # self.complex_trigger = complex_trigger
         self.kind = kind.upper()
-        # self.next_action_ids = set()
         self.next_actions = list()
         self.callback = callback or self.none_callback
         self.callback_args = callback_args or ()
         self.callback_kwargs = callback_kwargs
+
+        # only for 'I' kind actions
         self.input = None
 
     def __repr__(self):
         return "Action(id={}, trigger={}, kind={})".format(self.id, self.trigger, self.kind)
 
     def get_id(self):
+        """ return self.id """
         return self.id
 
     def get_next_actions(self):
-        """
-        :return: a set containing all the actions that can be performed in the next step
-        """
+        """ returns the list containing all the actions next in the line """
         return self.next_actions
 
     def add_actions(self, actions):
-        # _actions = []
+        """ Append `actions` to the of next_actions """
         if not isinstance(actions, (list, tuple, set)):
-            # _actions.append(actions)
             actions = [actions]
 
         for act in actions:
             self.next_actions.append(act)
-            # self.next_action_ids.add(act.id)
 
     def add_input(self, user_input):
         if self.kind == 'I':
@@ -56,7 +80,10 @@ class Action(object):
         raise AttributeError("Action of kind {} can't have input".format(self.kind))
 
     def check_trigger(self, trigger):
+        """ Checks if the given trigger can invoke the action or not """
         if self.kind == 'I':
+            # if this is an input action, it can be invoked.
+            # TODO: add regular expressions for filtering between multiple input actions
             self.input = trigger
             return True
         elif self.kind == 'M' and self.trigger == trigger:
@@ -66,17 +93,31 @@ class Action(object):
 
         return False
 
-    def invoke_callback(self, *args, **kwargs):
-        return self.callback(*args, *self.callback_args, input=self.input, **kwargs, **self.callback_kwargs)
+    async def invoke_callback(self, *args, **kwargs):
+        """
+        Coroutine
+
+        Invokes the callback passes the inputs, args and kwargs along with the previously provided args and kwargs
+        """
+        callback_coro = asyncio.coroutine(self.callback)
+        return await callback_coro(*args, *self.callback_args, input=self.input, **kwargs, **self.callback_kwargs)
 
     def clear_next_actions(self):
         self.next_actions.clear()
 
     @property
     def qualified_name(self):
+        """
+        Provides the qualified name for the action
+
+        :C: name = trigger as Slash Command
+        :M: name = Trigger
+        :I: name = None
+        """
         return '/{}'.format(self.trigger) if self.kind == 'C' else self.trigger if self.kind == 'M' else None
 
     def next_action_list(self):
+        """ returns the list of next actions that can be presented as keyboard buttons """
         return [action.qualified_name for action in self.next_actions if action.qualified_name is not None]
 
     @staticmethod

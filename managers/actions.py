@@ -18,7 +18,7 @@ class ActionManager(StorageManager):
         }
 
     def register_service(self, name, callback):
-        """ Name of publisher, method from publisher to call whenever there is some action for it"""
+        """ Name of service, method from service manager to call whenever there is some action for it """
         service_action = Action(name, 'C', self.service_register_message)
         self.service_callbacks[name] = callback
         StartAction.add_actions(service_action)
@@ -30,17 +30,12 @@ class ActionManager(StorageManager):
     async def resolve_action(self, session, message):
         """
         This session will use the context in session['action'] to get the next publisher callback. For action, if there
-
         """
         context = session['action']['context']
         last_action = session['action']['last_action']
         service_callback = self.service_callbacks[context]
-
-        # get_next_actions_coro = asyncio.coroutine(last_action.get_next_actions)
-        # next_actions = get_next_actions_coro()
         next_actions = last_action.get_next_actions()
 
-        # print(next_actions)
         for action in next_actions:
             if action.check_trigger(message):
                 if context == 'start' or context == 'unknown':  # assigning the context to framework name, assuming

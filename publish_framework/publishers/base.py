@@ -1,4 +1,5 @@
 import asyncio
+
 from actions_framework.actions import Action
 from publish_framework.filters.base import Filter
 from publish_framework.manager import PublisherManager
@@ -6,6 +7,13 @@ from managers.storage import StorageManager
 
 
 class Publisher(StorageManager):
+    """
+    Summary line
+    ------------
+        Base Class for all the publishers
+    """
+
+    # Subscription state for a user
     STATE_ACTIVE = 'A'
     STATE_UNSUBSCRIBED = 'U'
 
@@ -63,27 +71,20 @@ class Publisher(StorageManager):
             proceed: tells whether to proceed with this content or not
             filtered_content: result after filtering
         """
-        # print(1)
         proceed = True
         filtered_content = content
-        # print(self.filters)
         for filter in self.filters:
-            # print(2)
             filter_coro = asyncio.coroutine(filter)
             proceed, filtered_content = await filter_coro(filtered_content, to)
-            # print(3)
             if not proceed:
-                # print(4)
                 break
 
         return proceed, filtered_content, to
 
     async def publish(self, content):
+        """  Call this function and pass the content to send it to all the subscribed users """
         to = [key for key in self.subscribers.keys() if self.subscribers[key]['state'] == self.STATE_ACTIVE]
         filter_coro = asyncio.coroutine(self.filter_content)
         proceed, filtered_content, to = await filter_coro(content, to)
         if proceed:
             await PublisherManager.send_message(to=to, message=filtered_content)
-            # pass
-
-        print("exiting publish manager publish(). Content: {}".format(content))

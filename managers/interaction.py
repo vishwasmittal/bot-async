@@ -1,5 +1,6 @@
 import time
 import asyncio
+import aiojobs
 import uuid
 
 from app.schema.telegram.keyboard_button import KeyboardButton
@@ -62,14 +63,22 @@ class InteractionManager(StorageManager):
         self.id = uuid.uuid4()
         super().__init__(name)
         self.sessions = {}
-        # BotApp.add_receiver_callback(self.receive_message)
+        self.scheduler = self.get_scheduler()
+
+    def get_scheduler(self):
+        loop = asyncio.get_event_loop()
+        future = asyncio.ensure_future(aiojobs.create_scheduler())
+        return loop.run_until_complete(future)
 
     async def get_session(self, session_key):
-        """ session_key: <chat_id>"""
+        """
+        Get an existing session or create a new one
+
+        :param session_key: <chat_id>
+        """
+
         session = self.sessions.get(session_key)
-        # print('session is {}'.format(session))
         if not session:
-            # print("creating new session")
             session = {
                 'chat_id': session_key,
                 'security': {
@@ -77,7 +86,6 @@ class InteractionManager(StorageManager):
                     "role": Roles.ROLE_DEFAULT
                 },
                 'action': {
-                    # 'last_action': ActionSchema().dump(UnknownAction),
                     'last_action': UnknownAction,
                     'context': 'unknown'
                 },
@@ -85,38 +93,52 @@ class InteractionManager(StorageManager):
                 'framework_data': {},
             }
             self.sessions[session_key] = session
-        # print(self.sessions)
         return session
 
     async def update_session_conversation(self, session_key, message_json):
+        """
+        Update the conversation took place with any user whenever a message is sent.
+
+        :param session_key:
+        :param message_json:
+        :return: None
+        """
         self.sessions[session_key]['conversation'].append(message_json)
 
     async def send_message(self, to, message, next_actions):
-        print('interaction send_message')
+        """
+        Send message to the users
+
+        :param to: List of users to whom this message is to be sent
+        :param message: text to be sent to user
+        :param next_actions: list of next_actions user is allowed to perform
+        :return: None
+        """
         if next_actions:
             update_inline_results(next_actions)
-            # if next_actions:
-            #     keyboard = keyboard_layout(next_actions)
-            # else:
-            #     keyboard = None
             layout = keyboard_layout(next_actions)
             reply_keyboard = ReplyKeyboardMarkup(layout, one_time_keyboard=False)
-            print("keyboard: {}".format(reply_keyboard))
         else:
             reply_keyboard = None
         if not isinstance(to, (tuple, list)):
             to = [to]
         for t in to:
-            send_message = asyncio.coroutine(sendMessage)
-            result = await send_message(t, message, reply_keyboard)
-            print(result)
-            message_json = MessageSchema().dump(result)
-            await self.update_session_conversation(session_key=t, message_json=message_json)
+            await self.scheduler.spawn(self.__send_message_job__(t, message, reply_keyboard))
 
-        print("exiting from send message")
+    async def __send_message_job__(self, to, message, reply_keyboard):
+        """ Internal Method to send message to an individual user. To be used as in a aiojob """
+        start = time.time()
+        send_message = asyncio.coroutine(sendMessage)
+        result = await send_message(to, message, reply_keyboard)
+        message_json = MessageSchema().dump(result)
+        await self.update_session_conversation(session_key=to, message_json=message_json)
+        end = time.time()
+        print("Time taken to __send_message__: {}".format(end - start))
 
     async def receive_message(self, update):
-        """ update: update instance from telegram.update"""
+        """
+        When the message arrives, invoke this method and pass the update instance to start processing the message
+        """
 
         message_instance = update.message
         text = message_instance.text
@@ -142,6 +164,9 @@ class InteractionManager(StorageManager):
 
         end = time.time()
         print("Time taken to complete job: {}".format(end - start))
+
+    def __del__(self):
+        self.scheduler.close()
 
 
 InteractionManager = InteractionManager("interaction_manager")

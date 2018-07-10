@@ -42,7 +42,7 @@ async def post(session, url, data=None, json=True):
 
 async def make_http_request(url, data=None, json=True, method="GET"):
     async with ClientSession() as session:
-        print("fetching from {}".format(url))
+        # print("fetching from {}".format(url))
 
         if method.upper() == "GET":
             requester = get

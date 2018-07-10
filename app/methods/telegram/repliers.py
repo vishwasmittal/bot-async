@@ -22,10 +22,10 @@ inline_results = [
 
 
 def update_inline_results(actions):
-    print('update_inline_results')
+    # print('update_inline_results')
     inline_results.clear()
     for action_id in range(len(actions)):
-        print(1)
+        # print(1)
         inline_results.append({
             'type': 'article',
             'title': actions[action_id].title(),
@@ -34,12 +34,11 @@ def update_inline_results(actions):
                 'message_text': actions[action_id]
             }
         })
-
     return inline_results
 
 
 def get_validated_message(to, text, reply_markup):
-    print("reply_markup: {}".format(reply_markup))
+    # print("reply_markup: {}".format(reply_markup))
     reply_message_object = SendMessage(to, text, reply_markup=reply_markup)
     validated_message = SendMessageSchema().dump(reply_message_object)
     return validated_message
@@ -55,12 +54,12 @@ async def sendMessage(to, text, reply_markup):
     message = get_validated_message(to, text, reply_markup)
     url = template_url.format('sendMessage')
     # TODO: remove print statement
-    print("validated_message: {}".format(message))
-    return print(await make_http_request(url, data=message, method="POST"))
+    # print("validated_message: {}".format(message))
+    return await make_http_request(url, data=message, method="POST")
 
 
 async def answerInlineQuery(inline_query_id, results=inline_results):
     answer = get_validated_inline_answer(inline_query_id, results)
     url = template_url.format('answerInlineQuery')
     # TODO: remove print statement
-    return print(await make_http_request(url, data=answer, method="POST"))
+    return await make_http_request(url, data=answer, method="POST")
