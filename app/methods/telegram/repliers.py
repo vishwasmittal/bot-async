@@ -22,8 +22,10 @@ inline_results = [
 
 
 def update_inline_results(actions):
+    print('update_inline_results')
     inline_results.clear()
     for action_id in range(len(actions)):
+        print(1)
         inline_results.append({
             'type': 'article',
             'title': actions[action_id].title(),
@@ -32,6 +34,7 @@ def update_inline_results(actions):
                 'message_text': actions[action_id]
             }
         })
+
     return inline_results
 
 

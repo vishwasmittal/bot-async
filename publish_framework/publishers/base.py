@@ -55,7 +55,7 @@ class Publisher(StorageManager):
         else:
             self.filters.append(content_filter)
 
-    async def filter_content(self, content):
+    async def filter_content(self, content, to):
         """
         Returns the filtered content after calling all the filtered in the sequence they are added
         :param content: content to be filtered
@@ -63,15 +63,20 @@ class Publisher(StorageManager):
             proceed: tells whether to proceed with this content or not
             filtered_content: result after filtering
         """
+        # print(1)
         proceed = True
         filtered_content = content
+        # print(self.filters)
         for filter in self.filters:
+            # print(2)
             filter_coro = asyncio.coroutine(filter)
-            proceed, filtered_content = await filter_coro(filtered_content)
+            proceed, filtered_content = await filter_coro(filtered_content, to)
+            # print(3)
             if not proceed:
+                # print(4)
                 break
 
-        return proceed, filtered_content
+        return proceed, filtered_content, to
 
     async def publish(self, content):
         to = [key for key in self.subscribers.keys() if self.subscribers[key]['state'] == self.STATE_ACTIVE]
@@ -79,3 +84,6 @@ class Publisher(StorageManager):
         proceed, filtered_content, to = await filter_coro(content, to)
         if proceed:
             await PublisherManager.send_message(to=to, message=filtered_content)
+            # pass
+
+        print("exiting publish manager publish(). Content: {}".format(content))

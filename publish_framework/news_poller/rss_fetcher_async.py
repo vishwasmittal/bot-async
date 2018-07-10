@@ -47,11 +47,11 @@ async def runner(callback):
         # TODO: process the RSS objects like logging them
         data = feeds[0]['entries'][1]
         message = "{} {}".format(data['summary'], data['link'])
-        # print("fetched data: {}".format(message))
+        print("fetched data: {}".format(message))
         callback_coro = asyncio.coroutine(callback)
         await callback_coro(message)
         start = time.time()
-        await asyncio.sleep(10)
+        await asyncio.sleep(3)
         end = time.time()
         print("Time taken to wake up in runner(): {}".format(end - start))
 

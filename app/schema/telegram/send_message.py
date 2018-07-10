@@ -1,6 +1,7 @@
-from marshmallow import Schema, fields, post_load
+from marshmallow import Schema, fields, post_load, post_dump
 
 from .reply_keyboard_markup import ReplyKeyboardMarkupSchema
+from app.helpers.data_validator import remove_null_fields
 
 __all__ = ['SendMessageBaseSchema', 'ReplyKeyboardMessageSchema',
            "SendMessageSchema", 'SendMessageBase', 'SendMessage', 'ReplyKeyboardMessage']
@@ -21,7 +22,7 @@ class SendMessageBase:
 class ReplyKeyboardMessage(SendMessageBase):
     def __init__(self, chat_id, text, reply_markup, **kwargs):
         super().__init__(chat_id, text, **kwargs)
-        self.reply_markup = reply_markup    # ReplyKeyboardMarkup
+        self.reply_markup = reply_markup  # ReplyKeyboardMarkup
 
 
 class SendMessageBaseSchema(Schema):
@@ -39,6 +40,10 @@ class ReplyKeyboardMessageSchema(SendMessageBaseSchema):
     @post_load
     def get_object(self, data):
         return ReplyKeyboardMessage(**data)
+
+    @post_dump
+    def remove_empty_markup(self, data):
+        return remove_null_fields(data)
 
 
 SendMessage = ReplyKeyboardMessage

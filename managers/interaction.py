@@ -92,21 +92,28 @@ class InteractionManager(StorageManager):
         self.sessions[session_key]['conversation'].append(message_json)
 
     async def send_message(self, to, message, next_actions):
-        update_inline_results(next_actions)
-        # if next_actions:
-        #     keyboard = keyboard_layout(next_actions)
-        # else:
-        #     keyboard = None
-        layout = keyboard_layout(next_actions)
-        reply_keyboard = ReplyKeyboardMarkup(layout, one_time_keyboard=False)
-        print("keyboard: {}".format(reply_keyboard))
+        print('interaction send_message')
+        if next_actions:
+            update_inline_results(next_actions)
+            # if next_actions:
+            #     keyboard = keyboard_layout(next_actions)
+            # else:
+            #     keyboard = None
+            layout = keyboard_layout(next_actions)
+            reply_keyboard = ReplyKeyboardMarkup(layout, one_time_keyboard=False)
+            print("keyboard: {}".format(reply_keyboard))
+        else:
+            reply_keyboard = None
         if not isinstance(to, (tuple, list)):
             to = [to]
         for t in to:
             send_message = asyncio.coroutine(sendMessage)
             result = await send_message(t, message, reply_keyboard)
+            print(result)
             message_json = MessageSchema().dump(result)
             await self.update_session_conversation(session_key=t, message_json=message_json)
+
+        print("exiting from send message")
 
     async def receive_message(self, update):
         """ update: update instance from telegram.update"""
