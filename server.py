@@ -4,7 +4,7 @@ from aiohttp import web
 
 from app.main import create_app
 
-
+#function to run app in server
 def main():
     app = create_app()
     DP_SERVER_HOST = os.getenv('DP_SERVER_HOST', '0.0.0.0')
