@@ -1,5 +1,5 @@
 telegram
-aiohttp==3.0.1
+aiohttp==3.7.4
 aiohttp-cors==0.7.0
 aiohttp-debugtoolbar==0.5.0
 aiohttp-devtools==0.9
@@ -92,7 +92,7 @@ urllib3==1.22
 watchgod==0.1.1
 yarl==1.2.2
 aiodns==1.1.1
-aiohttp==3.0.1
+aiohttp==3.7.4
 aiohttp-cors==0.7.0
 aiohttp-debugtoolbar==0.5.0
 aiohttp-devtools==0.9
@@ -197,7 +197,7 @@ watchgod==0.1.1
 wrapt==1.10.11
 yarl==1.2.2
 aiodns==1.1.1
-aiohttp==3.0.1
+aiohttp==3.7.4
 aiohttp-cors==0.7.0
 aiohttp-debugtoolbar==0.5.0
 aiohttp-devtools==0.9
