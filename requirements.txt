@@ -86,7 +86,7 @@ pytest-cov==2.5.1
 pytz==2018.4
 PyYAML==3.12
 requests==2.18.4
-rsa==3.4.2
+rsa==4.1
 six==1.11.0
 urllib3==1.22
 watchgod==0.1.1
@@ -188,7 +188,7 @@ python-telegram-bot==10.1.0
 pytz==2018.4
 PyYAML==3.12
 requests==2.18.4
-rsa==3.4.2
+rsa==4.1
 six==1.11.0
 telegram==0.0.1
 transitions==0.6.8
@@ -293,7 +293,7 @@ python-telegram-bot==10.1.0
 pytz==2018.4
 PyYAML==3.12
 requests==2.18.4
-rsa==3.4.2
+rsa==4.1
 six==1.11.0
 telegram==0.0.1
 transitions==0.6.8
