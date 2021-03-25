@@ -84,7 +84,7 @@ pytest==3.4.0
 pytest-aiohttp==0.3.0
 pytest-cov==2.5.1
 pytz==2018.4
-PyYAML==3.12
+PyYAML==5.4
 requests==2.18.4
 rsa==3.4.2
 six==1.11.0
@@ -186,7 +186,7 @@ pytest-aiohttp==0.3.0
 pytest-cov==2.5.1
 python-telegram-bot==10.1.0
 pytz==2018.4
-PyYAML==3.12
+PyYAML==5.4
 requests==2.18.4
 rsa==3.4.2
 six==1.11.0
@@ -291,7 +291,7 @@ pytest-aiohttp==0.3.0
 pytest-cov==2.5.1
 python-telegram-bot==10.1.0
 pytz==2018.4
-PyYAML==3.12
+PyYAML==5.4
 requests==2.18.4
 rsa==3.4.2
 six==1.11.0
