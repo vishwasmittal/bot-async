@@ -13,7 +13,7 @@ async-timeout==2.0.1
 atpublic==1.0
 attrs==17.4.0
 cachetools==2.0.1
-certifi==2018.4.16
+certifi==2022.12.7
 cffi==1.11.5
 chardet==3.0.4
 click==6.7
@@ -108,7 +108,7 @@ atpublic==1.0
 attrs==17.4.0
 cachetools==2.0.1
 cchardet==2.1.1
-certifi==2018.4.16
+certifi==2022.12.7
 cffi==1.11.5
 chardet==3.0.4
 click==6.7
@@ -213,7 +213,7 @@ atpublic==1.0
 attrs==17.4.0
 cachetools==2.0.1
 cchardet==2.1.1
-certifi==2018.4.16
+certifi==2022.12.7
 cffi==1.11.5
 chardet==3.0.4
 click==6.7
